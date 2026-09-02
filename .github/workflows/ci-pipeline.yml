@@ -1,0 +1,68 @@
+name: N.A.K.S.H.A. Enterprise CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  backend-smoke-test:
+    name: Backend API & Database Smoke Test
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        cache: 'pip'
+        
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Security Audit (Bandit)
+      run: |
+        pip install bandit
+        bandit -r app/ -c "bandit.yml" || echo "Bandit finished."
+        
+    - name: Syntax & Lint Check
+      run: |
+        pip install flake8
+        flake8 app/ --count --select=E9,F63,F7,F82 --show-source --statistics
+
+  frontend-build-test:
+    name: Next.js Frontend Build Test
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./naksha-portal
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: './naksha-portal/package-lock.json'
+        
+    - name: Install NPM Dependencies
+      run: npm ci || npm install
+      
+    - name: Run Next.js Linter
+      run: npm run lint
+      
+    - name: Smoke Test - Production Build
+      # This ensures the React/Next.js code compiles cleanly without crashing
+      run: npm run build

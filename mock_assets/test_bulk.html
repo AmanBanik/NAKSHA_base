@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk AI Extraction Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-10 flex flex-col items-center">
+    
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+        <h1 class="text-2xl font-bold mb-4">Bulk AI Document Processor</h1>
+        <p class="text-gray-600 mb-6">Select multiple historical documents (Hold Ctrl to select multiple) to send to the Celery queue.</p>
+        
+        <input type="file" id="fileInput" multiple class="block w-full text-sm text-gray-500
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-full file:border-0
+            file:text-sm file:font-semibold
+            file:bg-blue-50 file:text-blue-700
+            hover:file:bg-blue-100 mb-4" />
+        
+        <button onclick="uploadFiles()" class="bg-blue-600 text-white font-bold py-2 px-4 rounded w-full hover:bg-blue-700">
+            Upload to AI Queue
+        </button>
+
+        <div id="output" class="mt-6 bg-gray-900 text-green-400 p-4 rounded text-xs whitespace-pre-wrap overflow-x-auto hidden"></div>
+    </div>
+
+    <script>
+        async function uploadFiles() {
+            const fileInput = document.getElementById('fileInput');
+            const output = document.getElementById('output');
+            
+            if (fileInput.files.length === 0) {
+                alert("Please select at least one file!");
+                return;
+            }
+
+            const formData = new FormData();
+            for (let i = 0; i < fileInput.files.length; i++) {
+                formData.append("files", fileInput.files[i]);
+            }
+
+            output.classList.remove('hidden');
+            output.innerText = "Uploading " + fileInput.files.length + " files...";
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/extract/bulk", {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const result = await response.json();
+                output.innerText = JSON.stringify(result, null, 2);
+            } catch (error) {
+                output.innerText = "Error: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

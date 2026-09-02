@@ -1,0 +1,40 @@
+# N.A.K.S.H.A. Root Gitignore
+
+# 1. Mock Directories & Sensitive Credentials
+pre_mvp/
+backend/credentials.md
+
+# 2. Python / Backend
+backend/venv/
+backend/.env
+backend/__pycache__/
+backend/.pytest_cache/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# 3. Node / Next.js Frontend
+naksha-portal/node_modules/
+naksha-portal/.next/
+naksha-portal/out/
+naksha-portal/build/
+naksha-portal/.env*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# 4. OS / System Files
+.DS_Store
+Thumbs.db
+
+# 5. IDEs
+.vscode/
+.idea/
+*.swp
+*.swo

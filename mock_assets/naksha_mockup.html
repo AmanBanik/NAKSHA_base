@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N.A.K.S.H.A. - Mockup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        .font-data { font-family: 'JetBrains Mono', monospace; }
+        .font-serif { font-family: 'Merriweather', serif; }
+        .gradient-india { background: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%); }
+        .text-accent { color: #e5bd45; }
+        .bg-accent { background-color: #e5bd45; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-2xl z-10">
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="font-serif text-2xl font-bold tracking-wider text-accent">N.A.K.S.H.A.</h1>
+            <p class="text-xs text-slate-400 mt-1">Neural Archival Knowledge</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <a href="#" class="block px-4 py-3 rounded bg-slate-800 text-white font-semibold border-l-4 border-amber-500">
+                Magistrate Dashboard
+            </a>
+            <a href="#" class="block px-4 py-3 rounded hover:bg-slate-800 text-slate-300 transition">
+                Bulk Digitization
+            </a>
+            <a href="#" class="block px-4 py-3 rounded hover:bg-slate-800 text-slate-300 transition">
+                AI Verification Desk
+            </a>
+            <a href="#" class="block px-4 py-3 rounded hover:bg-slate-800 text-slate-300 transition">
+                Public Validator
+            </a>
+        </nav>
+        <div class="p-4 bg-slate-800 m-4 rounded text-center">
+            <p class="text-xs text-slate-400 font-data mb-2">Govt. of West Bengal</p>
+            <div class="h-1 w-full gradient-india rounded"></div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-y-auto">
+        
+        <!-- Header -->
+        <header class="bg-white shadow-sm px-8 py-5 flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">Regional Overview: Nadia District</h2>
+                <p class="text-sm text-slate-500">Live AI Digitization Metrics</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200">
+                    System Secure
+                </span>
+                <div class="w-10 h-10 rounded-full gradient-india border-2 border-white shadow flex items-center justify-center text-white font-bold">
+                    DM
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Body -->
+        <div class="p-8">
+            
+            <!-- Metrics Cards -->
+            <div class="grid grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 border-t-4 border-t-sky-500">
+                    <h3 class="text-slate-500 text-sm font-semibold uppercase">Documents Scanned</h3>
+                    <p class="font-data text-3xl font-bold text-slate-800 mt-2">12,450</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 border-t-4 border-t-amber-500">
+                    <h3 class="text-slate-500 text-sm font-semibold uppercase">Pending Verification</h3>
+                    <p class="font-data text-3xl font-bold text-slate-800 mt-2">432</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 border-t-4 border-t-red-500">
+                    <h3 class="text-slate-500 text-sm font-semibold uppercase">Fraud Alerts</h3>
+                    <p class="font-data text-3xl font-bold text-red-600 mt-2">7</p>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                    <h3 class="font-bold text-slate-800">Recently Digitized Records</h3>
+                    <button class="gradient-india text-white px-4 py-2 rounded font-semibold text-sm shadow hover:opacity-90 transition">
+                        Export Report
+                    </button>
+                </div>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-white text-xs uppercase text-slate-400 border-b">
+                            <th class="px-6 py-4 font-semibold">Reg. No</th>
+                            <th class="px-6 py-4 font-semibold">Primary Holder</th>
+                            <th class="px-6 py-4 font-semibold">Area (Acres)</th>
+                            <th class="px-6 py-4 font-semibold">Status</th>
+                            <th class="px-6 py-4 font-semibold text-right">Crypto Hash</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-slate-100">
+                        <!-- Row 1 -->
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="px-6 py-4 font-data text-slate-700 font-bold">LRO/KLY/2024/0056789</td>
+                            <td class="px-6 py-4 text-slate-800">Sri Soumen Mondal</td>
+                            <td class="px-6 py-4 text-slate-600">1.26</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded font-semibold">Verified</span>
+                            </td>
+                            <td class="px-6 py-4 text-right font-data text-xs text-slate-400">A3F8...91C</td>
+                        </tr>
+                        <!-- Row 2 -->
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="px-6 py-4 font-data text-slate-700 font-bold">VOL.4/1923/88</td>
+                            <td class="px-6 py-4 text-slate-800">Jacob Mason</td>
+                            <td class="px-6 py-4 text-slate-600">40.00</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded font-semibold">AI Pending</span>
+                            </td>
+                            <td class="px-6 py-4 text-right font-data text-xs text-slate-400">N/A</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </main>
+</body>
+</html>
