@@ -63,7 +63,7 @@ export default function CopilotChat() {
                             <div className="flex flex-col items-center justify-center h-full text-center opacity-70">
                                 <Bot size={32} className="text-[#14B8A6] mb-3 opacity-50" />
                                 <p className="text-slate-600 text-sm font-medium">Ask me anything about the digitized land records.</p>
-                                <p className="text-slate-400 text-xs mt-2">Example: "Who owns the largest plot of land?"</p>
+                                <p className="text-slate-400 text-xs mt-2">Example: &quot;Who owns the largest plot of land?&quot;</p>
                             </div>
                         )}
                         {messages.map((msg, i) => (

@@ -151,7 +151,7 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                         <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl mt-8">
                             <h4 className="text-sm font-bold text-blue-900 mb-1">Human-in-the-Loop Process</h4>
                             <p className="text-xs text-blue-800/80 leading-relaxed">
-                                Review the AI-extracted fields above against the original document on the left. Correct any misinterpretations. Clicking "Approve" will permanently encode these values into a cryptographic SHA-256 hash.
+                                Review the AI-extracted fields above against the original document on the left. Correct any misinterpretations. Clicking &quot;Approve&quot; will permanently encode these values into a cryptographic SHA-256 hash.
                             </p>
                         </div>
                     </div>
