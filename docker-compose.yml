@@ -32,8 +32,6 @@ services:
     depends_on:
       - db
       - redis
-    env_file:
-      - ./backend/.env
     environment:
       - DATABASE_URL=postgresql://sih_user:sih_password@db:5432/land_records_db
       - REDIS_URL=redis://redis:6379/0
@@ -54,8 +52,6 @@ services:
     depends_on:
       - db
       - redis
-    env_file:
-      - ./backend/.env
     environment:
       - DATABASE_URL=postgresql://sih_user:sih_password@db:5432/land_records_db
       - REDIS_URL=redis://redis:6379/0
