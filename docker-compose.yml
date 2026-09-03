@@ -67,7 +67,7 @@ services:
       context: ./naksha-portal
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_API_URL=http://YOUR_AZURE_VM_IP:8000
+        - NEXT_PUBLIC_API_URL=http://naksha-6bytes.koreacentral.cloudapp.azure.com:8000
     container_name: sih_frontend
     restart: always
     ports:
@@ -77,7 +77,7 @@ services:
     environment:
       # In the cloud, the frontend will call the VM's public IP on port 8000
       # You can override this dynamically later if you map a domain name
-      - NEXT_PUBLIC_API_URL=http://YOUR_AZURE_VM_IP:8000
+      - NEXT_PUBLIC_API_URL=http://naksha-6bytes.koreacentral.cloudapp.azure.com:8000
 
 volumes:
   postgres_data:
