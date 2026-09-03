@@ -7,8 +7,11 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app import models
 
-# SECRET_KEY should ideally be in .env, using a hardcoded one for Hackathon demo
-SECRET_KEY = "naksha_sih_hackathon_super_secret_key"
+import os
+
+# SECRET_KEY should always be in .env for production.
+# We fallback to a default string ONLY to prevent the hackathon demo from crashing if the .env is misconfigured.
+SECRET_KEY = os.getenv("JWT_SECRET", "naksha_sih_hackathon_super_secret_key")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
