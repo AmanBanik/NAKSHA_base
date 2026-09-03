@@ -9,9 +9,8 @@ from app import models
 
 import os
 
-# SECRET_KEY should always be in .env for production.
-# We fallback to a default string ONLY to prevent the hackathon demo from crashing if the .env is misconfigured.
-SECRET_KEY = os.getenv("JWT_SECRET", "naksha_sih_hackathon_super_secret_key")
+# Strict Production Security: Crash on boot if JWT_SECRET is missing.
+SECRET_KEY = os.environ["JWT_SECRET"]
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
