@@ -25,7 +25,7 @@ export default function BulkDigitization() {
 
     try {
       // Send to FastAPI Celery Worker
-      const res = await axios.post('http://127.0.0.1:8000/api/extract/bulk', formData, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/extract/bulk`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       

@@ -24,7 +24,7 @@ export default function CopilotChat() {
         setLoading(true);
 
         try {
-            const res = await axios.post('http://127.0.0.1:8000/api/chat', { message: userMsg });
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/chat`, { message: userMsg });
             setMessages(prev => [...prev, { role: 'ai', text: res.data.response }]);
         } catch (err) {
             setMessages(prev => [...prev, { role: 'ai', text: 'Error connecting to N.A.K.S.H.A. Copilot Backend. Ensure FastAPI is running.' }]);

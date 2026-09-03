@@ -26,7 +26,7 @@ export default function Dashboard() {
     setTenantState(state);
 
     // Fetch live data from our Python backend
-    axios.get('http://127.0.0.1:8000/api/dashboard/stats', {
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/dashboard/stats`, {
         headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
@@ -40,7 +40,7 @@ export default function Dashboard() {
 
     // Azure Real-Time Health Ping
     const pingAzure = () => {
-        axios.get('http://127.0.0.1:8000/api/health/azure')
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/health/azure`)
             .then(res => {
                 setAzureHealth({
                     status: res.data.status, 

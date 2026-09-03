@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: sih_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: sih_user
+      POSTGRES_PASSWORD: sih_password
+      POSTGRES_DB: land_records_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: sih_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  api:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sih_api
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - ./backend/.env
+    environment:
+      - DATABASE_URL=postgresql://sih_user:sih_password@db:5432/land_records_db
+      - REDIS_URL=redis://redis:6379/0
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - AZURE_FORM_RECOGNIZER_KEY=${AZURE_FORM_RECOGNIZER_KEY}
+      - AZURE_FORM_RECOGNIZER_ENDPOINT=${AZURE_FORM_RECOGNIZER_ENDPOINT}
+      - JWT_SECRET=${JWT_SECRET}
+
+  worker:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sih_celery_worker
+    restart: always
+    command: celery -A app.worker.celery_app worker --loglevel=info -P gevent
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - ./backend/.env
+    environment:
+      - DATABASE_URL=postgresql://sih_user:sih_password@db:5432/land_records_db
+      - REDIS_URL=redis://redis:6379/0
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - AZURE_FORM_RECOGNIZER_KEY=${AZURE_FORM_RECOGNIZER_KEY}
+      - AZURE_FORM_RECOGNIZER_ENDPOINT=${AZURE_FORM_RECOGNIZER_ENDPOINT}
+      - JWT_SECRET=${JWT_SECRET}
+
+  frontend:
+    build:
+      context: ./naksha-portal
+      dockerfile: Dockerfile
+    container_name: sih_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    environment:
+      # In the cloud, the frontend will call the VM's public IP on port 8000
+      # You can override this dynamically later if you map a domain name
+      - NEXT_PUBLIC_API_URL=http://YOUR_AZURE_VM_IP:8000
+
+volumes:
+  postgres_data:

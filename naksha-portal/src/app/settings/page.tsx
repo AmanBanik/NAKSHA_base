@@ -157,7 +157,7 @@ export default function Settings() {
                                         setIsResetting(true);
                                         setResetError('');
                                         try {
-                                            await axios.post('http://127.0.0.1:8000/api/auth/reset_password', {
+                                            await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/auth/reset_password`, {
                                                 passkey: passkeyInput,
                                                 new_password: newPassword
                                             }, {

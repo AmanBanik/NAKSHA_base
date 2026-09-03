@@ -17,7 +17,7 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
     const [primaryParty, setPrimaryParty] = useState('');
 
     useEffect(() => {
-        axios.get(`http://127.0.0.1:8000/api/records/${params.id}`)
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}`}/api/records/${params.id}`)
             .then(res => {
                 setRecord(res.data);
                 setRegNumber(res.data.registration_number || '');
@@ -34,7 +34,7 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
     const handleApprove = async () => {
         setApproving(true);
         try {
-            const res = await axios.post(`http://127.0.0.1:8000/api/records/${params.id}/approve`, {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}`}/api/records/${params.id}/approve`, {
                 registration_number: regNumber,
                 acres: acres,
                 primary_parties: [primaryParty]

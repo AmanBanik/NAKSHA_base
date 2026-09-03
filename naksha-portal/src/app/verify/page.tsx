@@ -18,7 +18,7 @@ export default function Validator() {
     setError(null);
 
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/api/records/verify/${hashInput.trim()}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}`}/api/records/verify/${hashInput.trim()}`);
       setResult(res.data);
     } catch (err: any) {
       if (err.response && err.response.status === 404) {
