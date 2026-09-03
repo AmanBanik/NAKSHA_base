@@ -68,6 +68,8 @@ services:
     build:
       context: ./naksha-portal
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://YOUR_AZURE_VM_IP:8000
     container_name: sih_frontend
     restart: always
     ports:

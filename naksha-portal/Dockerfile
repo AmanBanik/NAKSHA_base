@@ -9,8 +9,8 @@ RUN npm ci
 
 # Copy source code and build
 COPY . .
-# The build requires NEXT_PUBLIC_API_URL to be passed in at build time if it's baked into static pages, 
-# but for our setup, it's read by the browser. 
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN npm run build
 
 # Production image
