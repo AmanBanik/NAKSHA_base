@@ -14,11 +14,14 @@ from openai import AzureOpenAI
 
 load_dotenv()
 
+# Use REDIS_URL from environment variable if present, otherwise default to localhost
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+
 # Initialize Celery connected to our local Docker Redis
 celery_app = Celery(
     "sih_worker",
-    broker="redis://localhost:6379/0",
-    backend="redis://localhost:6379/0"
+    broker=REDIS_URL,
+    backend=REDIS_URL
 )
 
 # --- CRON JOB SETUP (Celery Beat) ---
