@@ -26,9 +26,11 @@ export default function Sidebar() {
   if (pathname === '/login') return null;
 
   const handleLogout = () => {
-    sessionStorage.removeItem('naksha_token');
-    sessionStorage.removeItem('naksha_state');
-    window.location.href = '/login';
+    if (window.confirm("Are you sure you want to securely log out of N.A.K.S.H.A.?")) {
+      sessionStorage.removeItem('naksha_token');
+      sessionStorage.removeItem('naksha_state');
+      window.location.href = '/login';
+    }
   };
 
   return (

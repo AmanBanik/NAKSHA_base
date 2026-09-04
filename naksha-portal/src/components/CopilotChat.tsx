@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { Bot, X, Send, User } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -11,6 +11,15 @@ export default function CopilotChat() {
     const [messages, setMessages] = useState<{role: 'user' | 'ai', text: string}[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages, loading, isOpen]);
 
     if (pathname === '/login') return null;
 
@@ -94,6 +103,7 @@ export default function CopilotChat() {
                                 </div>
                             </div>
                         )}
+                        <div ref={messagesEndRef} />
                     </div>
 
                     {/* Input Area */}

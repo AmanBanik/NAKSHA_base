@@ -195,13 +195,14 @@ async def chat_with_database(chat: ChatMessage, db: Session = Depends(get_db)):
         for r in records:
             context_data.append(f"- RegNo: {r.registration_number} | Acres: {r.acres} | Status: {r.status} | Owners: {r.primary_parties}")
         
-        db_context_string = "\n".join(context_data)
+        db_context_string = "\n".join(context_data) if context_data else "DATABASE IS CURRENTLY EMPTY. NO RECORDS EXIST."
         
         system_prompt = (
             "You are N.A.K.S.H.A. Copilot, an elite AI assistant for a Government Magistrate. "
-            "Your job is to answer questions by querying the data provided below. "
-            "Be extremely concise, professional, and do not make up any data. "
-            "If the answer is not in the records, state that clearly.\n\n"
+            "Your job is to answer questions strictly using the data provided below. "
+            "Be extremely concise, professional, and NEVER hallucinate or make up data. "
+            "If the LIVE POSTGRESQL DATABASE CONTEXT says it is empty, firmly state that no records exist. "
+            "If the user asks about records that are not in the context, state that clearly.\n\n"
             f"LIVE POSTGRESQL DATABASE CONTEXT:\n{db_context_string}"
         )
 
