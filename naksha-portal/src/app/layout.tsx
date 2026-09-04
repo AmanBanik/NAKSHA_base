@@ -13,13 +13,16 @@ export const metadata: Metadata = {
   title: "N.A.K.S.H.A. | Neural Archival Knowledge & Script Heuristic Analyzer",
   description: "An AI-powered Government Land Record Digitization and Cryptographic Verification System.",
   keywords: "N.A.K.S.H.A., Land Records, AI, OCR, Government, Blockchain Hash, Verification",
+  authors: [{ name: "Team 6Bytes" }],
   openGraph: {
     title: "N.A.K.S.H.A. | AI Land Record Digitization",
     description: "An AI-powered Government Land Record Digitization and Cryptographic Verification System.",
     url: "http://naksha-6bytes.koreacentral.cloudapp.azure.com:3000",
     siteName: "N.A.K.S.H.A.",
     locale: "en_IN",
-    type: "website",
+    type: "article",
+    publishedTime: new Date().toISOString(),
+    authors: ["Team 6Bytes"],
   },
   twitter: {
     card: "summary_large_image",
