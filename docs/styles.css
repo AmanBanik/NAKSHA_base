@@ -239,10 +239,9 @@ p {
 }
 
 .mermaid svg {
-  min-width: 800px; /* Forces a larger minimum size */
+  min-width: 700px; /* Forces a reasonable minimum size */
   max-width: 100%;
   height: auto !important; /* Let aspect ratio determine height */
-  transform: scale(1.05); /* Slight up-scale */
   transform-origin: center;
 }
 

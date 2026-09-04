@@ -64,17 +64,15 @@
             <div class="mermaid-container">
                 <div class="mermaid">
                     graph TD
-                        User[User / Magistrate] -->|HTTPS| Frontend[Next.js UI - Azure VM]
-                        Frontend -->|REST API| API[FastAPI Backend - Container]
-                        API -->|Task Queue| Redis[Redis Broker - Container]
-                        Redis --> Worker[Celery Worker - Container]
-                        Worker -->|OCR / NLP| AzureDoc[Azure Document Intelligence]
-                        Worker -->|Chat / Structuring| AzureOpenAI[Azure OpenAI GPT-4o]
-                        AzureDoc -->|Extracted Data| Worker
-                        AzureOpenAI -->|Clean Data| Worker
-                        Worker -->|Confidence < 90%| HITL[Human-In-The-Loop / Pending Review]
-                        Worker -->|Confidence >= 90%| Auto[Auto-Verified Record]
-                        HITL --> DB[(PostgreSQL - Volume Attached)]
+                        User["User / Magistrate"] -->|HTTPS| Frontend["Next.js UI<br/>(Azure VM)"]
+                        Frontend -->|REST API| API["FastAPI Backend<br/>(Container)"]
+                        API -->|Task Queue| Redis["Redis Broker<br/>(Container)"]
+                        Redis --> Worker["Celery Worker<br/>(Container)"]
+                        Worker <-->|"1. Send Image<br/>2. Extracted JSON"| AzureDoc["Azure Document<br/>Intelligence"]
+                        Worker <-->|"1. Prompt<br/>2. Structured Data"| AzureOpenAI["Azure OpenAI<br/>GPT-4o"]
+                        Worker -->|"Confidence < 90%"| HITL["Human-In-The-Loop<br/>(Pending Review)"]
+                        Worker -->|"Confidence >= 90%"| Auto["Auto-Verified<br/>Record"]
+                        HITL --> DB[("PostgreSQL<br/>(Volume Attached)")]
                         Auto --> DB
                         API -->|Read/Write| DB
                 </div>
