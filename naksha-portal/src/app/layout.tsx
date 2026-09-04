@@ -18,14 +18,6 @@ export const metadata: Metadata = {
     description: "An AI-powered Government Land Record Digitization and Cryptographic Verification System.",
     url: "http://naksha-6bytes.koreacentral.cloudapp.azure.com:3000",
     siteName: "N.A.K.S.H.A.",
-    images: [
-      {
-        url: "/opengraph-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "N.A.K.S.H.A. System Dashboard Preview"
-      }
-    ],
     locale: "en_IN",
     type: "website",
   },
@@ -33,7 +25,6 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "N.A.K.S.H.A. | AI Land Record Digitization",
     description: "An AI-powered Government Land Record Digitization and Cryptographic Verification System.",
-    images: ["/opengraph-image.jpg"],
   }
 };
 
