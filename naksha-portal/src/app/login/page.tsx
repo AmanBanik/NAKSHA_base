@@ -23,9 +23,9 @@ export default function Login() {
         password: password
       });
 
-      // Save the JWT token and Tenant State to LocalStorage
-      localStorage.setItem('naksha_token', res.data.access_token);
-      localStorage.setItem('naksha_state', res.data.state_jurisdiction);
+      // Save the JWT token and Tenant State to sessionStorage
+      sessionStorage.setItem('naksha_token', res.data.access_token);
+      sessionStorage.setItem('naksha_state', res.data.state_jurisdiction);
 
       // Redirect to the Central Dashboard
       router.push('/');

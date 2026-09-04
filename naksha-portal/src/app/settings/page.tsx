@@ -20,8 +20,8 @@ export default function Settings() {
   const [resetError, setResetError] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('naksha_token');
-    const state = localStorage.getItem('naksha_state');
+    const token = sessionStorage.getItem('naksha_token');
+    const state = sessionStorage.getItem('naksha_state');
     
     if (!token || !state) {
         router.push('/login');
@@ -161,7 +161,7 @@ export default function Settings() {
                                                 passkey: passkeyInput,
                                                 new_password: newPassword
                                             }, {
-                                                headers: { Authorization: `Bearer ${localStorage.getItem('naksha_token')}` }
+                                                headers: { Authorization: `Bearer ${sessionStorage.getItem('naksha_token')}` }
                                             });
                                             setResetSuccess(true);
                                             setPasskeyInput('');

@@ -15,8 +15,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Read JWT Auth State
-    const token = localStorage.getItem('naksha_token');
-    const state = localStorage.getItem('naksha_state');
+    const token = sessionStorage.getItem('naksha_token');
+    const state = sessionStorage.getItem('naksha_state');
     
     if (!token || !state) {
         router.push('/login');

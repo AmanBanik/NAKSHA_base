@@ -9,7 +9,7 @@ export default function Sidebar() {
   const [tenantState, setTenantState] = useState("Loading...");
 
   useEffect(() => {
-    const savedState = localStorage.getItem('naksha_state');
+    const savedState = sessionStorage.getItem('naksha_state');
     if (savedState) {
       setTenantState(`Govt. of ${savedState}`);
     } else {
@@ -26,8 +26,8 @@ export default function Sidebar() {
   if (pathname === '/login') return null;
 
   const handleLogout = () => {
-    localStorage.removeItem('naksha_token');
-    localStorage.removeItem('naksha_state');
+    sessionStorage.removeItem('naksha_token');
+    sessionStorage.removeItem('naksha_state');
     window.location.href = '/login';
   };
 
