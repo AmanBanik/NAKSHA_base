@@ -1,0 +1,259 @@
+:root {
+  --primary: #0D9488;
+  --primary-dark: #0F766E;
+  --secondary: #D97706;
+  --bg-color: #FAF7F2;
+  --text-main: #1C1917;
+  --text-light: #475569;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+header {
+  background: linear-gradient(135deg, #111827, #1F2937);
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+  border-bottom: 4px solid var(--primary);
+}
+
+header h1 {
+  font-family: 'Merriweather', serif;
+  font-size: 3rem;
+  color: var(--secondary);
+  margin-bottom: 1rem;
+}
+
+header p {
+  font-size: 1.2rem;
+  color: #cbd5e1;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  background: white;
+  padding: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  z-index: 100;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--text-main);
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: var(--primary);
+}
+
+.container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+section {
+  margin-bottom: 4rem;
+  background: white;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+h2 {
+  font-family: 'Merriweather', serif;
+  color: var(--primary-dark);
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+h3 {
+  font-size: 1.3rem;
+  color: var(--text-main);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+p {
+  margin-bottom: 1rem;
+  color: var(--text-light);
+}
+
+/* Badges */
+.stack-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.bg-nextjs { background-color: #000000; }
+.bg-fastapi { background-color: #009688; }
+.bg-celery { background-color: #a8e040; color: #111; }
+.bg-redis { background-color: #d82c20; }
+.bg-postgres { background-color: #336791; }
+.bg-azure { background-color: #0078d4; }
+.bg-docker { background-color: #2496ed; }
+.bg-ai { background-color: #10b981; }
+
+/* Hurdles Grid */
+.hurdle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.hurdle-card {
+  background: var(--bg-color);
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid var(--secondary);
+  padding: 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hurdle-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.hurdle-title {
+  font-weight: bold;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hurdle-content {
+  display: none;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.hurdle-card.active .hurdle-content {
+  display: block;
+}
+
+.hurdle-fix {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: #ecfdf5;
+  border: 1px solid #10b981;
+  border-radius: 6px;
+  color: #065f46;
+}
+
+/* Directions */
+.direction-box {
+  background: #f8fafc;
+  border-left: 4px solid var(--primary);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0 8px 8px 0;
+}
+
+.direction-box.tech {
+  border-left-color: #6366f1;
+}
+
+/* Trainer Notes & Deep Dives */
+.trainer-note {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-left: 5px solid #f59e0b;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.trainer-note h4 {
+  color: #b45309;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.deep-dive {
+  background: #f1f5f9;
+  padding: 2rem;
+  border-radius: 8px;
+  margin: 2rem 0;
+  border: 1px dashed #cbd5e1;
+}
+
+.mermaid-container {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.mermaid {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.mermaid svg {
+  min-width: 800px; /* Forces a larger minimum size */
+  max-width: 100%;
+  height: auto !important; /* Let aspect ratio determine height */
+  transform: scale(1.05); /* Slight up-scale */
+  transform-origin: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+footer {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
