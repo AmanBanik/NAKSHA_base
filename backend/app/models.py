@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, JSON, DateTime, Text, ForeignKey
 from sqlalchemy.sql import func
+from geoalchemy2 import Geometry
 from .database import Base
 
 class User(Base):
@@ -29,6 +30,7 @@ class LandRecord(Base):
     # Store lists and dynamic key-value pairs as JSON natively in Postgres
     primary_parties = Column(JSON, nullable=True)
     boundaries = Column(JSON, nullable=True)
+    geo_polygon = Column(Geometry('POLYGON'), nullable=True) # Actual PostGIS Spatial Data
     additional_parameters = Column(JSON, nullable=True)
     
     # Audit & Tracking Metadata

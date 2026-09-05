@@ -6,8 +6,9 @@ from app.database import SessionLocal, engine
 from app import models
 from app.auth import get_password_hash
 
-# Drop the users table so we can recreate it with the bitlocker column
+# Drop the tables so we can recreate them with the new PostGIS columns
 models.User.__table__.drop(engine, checkfirst=True)
+models.LandRecord.__table__.drop(engine, checkfirst=True)
 models.Base.metadata.create_all(bind=engine)
 
 STATES = [
@@ -63,6 +64,19 @@ def seed():
             markdown_lines.append(f"| {state} | `{username}` | `{password}` | `{passkey}` |")
             
     db.commit()
+    
+    # Add a Dummy PostGIS Land Record for Map testing
+    dummy_record = models.LandRecord(
+        state_jurisdiction="West Bengal",
+        registration_number="WB-TEST-2026",
+        acres=5.4,
+        primary_parties=["Amit Kumar"],
+        status="VERIFIED",
+        geo_polygon="POLYGON((88.3639 22.5726, 88.3649 22.5726, 88.3649 22.5736, 88.3639 22.5736, 88.3639 22.5726))" # Coordinates near Kolkata
+    )
+    db.add(dummy_record)
+    db.commit()
+    
     db.close()
     
     # Save to a markdown file
