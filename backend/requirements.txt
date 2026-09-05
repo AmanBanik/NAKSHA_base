@@ -19,3 +19,4 @@ python-multipart
 gevent==23.9.1
 GeoAlchemy2==0.14.1
 Shapely==2.0.1
+numpy<2
