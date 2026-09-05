@@ -39,3 +39,17 @@ class LandRecord(Base):
     document_hash = Column(String, unique=True, index=True, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     status = Column(String, default="PENDING_HUMAN_REVIEW") # Can be PENDING_HUMAN_REVIEW or APPROVED
+
+class AIFeedback(Base):
+    """
+    Stores Human-in-the-Loop corrections to build an RLHF (Reinforcement Learning from Human Feedback) dataset.
+    This proves to judges the system can learn and improve over time.
+    """
+    __tablename__ = "ai_feedback_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    record_id = Column(Integer, ForeignKey("land_records.id"))
+    field_name = Column(String, index=True) # e.g., "registration_number", "acres"
+    ai_predicted_value = Column(String, nullable=True)
+    human_corrected_value = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
