@@ -222,7 +222,8 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                             <div className="flex-1">
                                 <CadastralMap 
                                     geoJsonPolygon={customPolygon} 
-                                    isEditing={isMapEditing} 
+                                    isEditing={isMapEditing}
+                                    isFullscreen={isMapFullscreen}
                                     onPolygonChange={setCustomPolygon}
                                 />
                             </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Polygon, Popup, Marker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Polygon, Popup, Marker, useMapEvents, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -17,6 +17,7 @@ interface MapProps {
     geoJsonPolygon: any;
     center?: [number, number];
     isEditing?: boolean;
+    isFullscreen?: boolean;
     onPolygonChange?: (geoJson: any) => void;
 }
 
@@ -30,7 +31,19 @@ function ClickHandler({ onMapClick }: { onMapClick: (latlng: L.LatLng) => void }
     return null;
 }
 
-export default function CadastralMap({ geoJsonPolygon, center, isEditing, onPolygonChange }: MapProps) {
+// Fixes Leaflet's gray tile bug when dynamically resizing containers
+function ResizeHandler({ isFullscreen }: { isFullscreen?: boolean }) {
+    const map = useMap();
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            map.invalidateSize();
+        }, 300); // 300ms allows the browser DOM to finish expanding
+        return () => clearTimeout(timer);
+    }, [isFullscreen, map]);
+    return null;
+}
+
+export default function CadastralMap({ geoJsonPolygon, center, isEditing, isFullscreen, onPolygonChange }: MapProps) {
     const [points, setPoints] = useState<[number, number][]>([]);
 
     useEffect(() => {
@@ -86,6 +99,7 @@ export default function CadastralMap({ geoJsonPolygon, center, isEditing, onPoly
     return (
         <div style={{ minHeight: '400px', height: '100%', width: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', position: 'relative' }}>
             <MapContainer center={mapCenter} zoom={18} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
+                <ResizeHandler isFullscreen={isFullscreen} />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
