@@ -79,5 +79,22 @@ services:
       # You can override this dynamically later if you map a domain name
       - NEXT_PUBLIC_API_URL=http://naksha-6bytes.koreacentral.cloudapp.azure.com:8000
 
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: sih_grafana
+    restart: always
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - db
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+
 volumes:
   postgres_data:
+  grafana_data:

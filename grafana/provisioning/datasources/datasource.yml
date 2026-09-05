@@ -1,0 +1,15 @@
+apiVersion: 1
+
+datasources:
+  - name: PostgreSQL
+    type: postgres
+    access: proxy
+    url: db:5432
+    user: sih_user
+    secureJsonData:
+      password: sih_password
+    database: land_records_db
+    jsonData:
+      sslmode: 'disable'
+      postgresVersion: 15
+    isDefault: true
