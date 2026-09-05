@@ -3,6 +3,7 @@ import json
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from openai import AzureOpenAI
@@ -157,7 +158,16 @@ async def get_dashboard_stats(db: Session = Depends(get_db), token: str = Depend
     
     fraud_alerts = db.query(models.LandRecord).filter(models.LandRecord.state_jurisdiction == tenant_state, models.LandRecord.document_hash == None).count()
     
-    recent_records = db.query(models.LandRecord).filter(models.LandRecord.state_jurisdiction == tenant_state).order_by(models.LandRecord.created_at.desc()).limit(10).all()
+    recent_records_raw = db.query(models.LandRecord, func.ST_AsGeoJSON(models.LandRecord.geo_polygon).label('geojson')).filter(models.LandRecord.state_jurisdiction == tenant_state).order_by(models.LandRecord.created_at.desc()).limit(10).all()
+    
+    # We must format the raw WKB Element into standard JSON for the frontend
+    recent_records = []
+    for record, geojson_str in recent_records_raw:
+        record_dict = record.__dict__.copy()
+        if "_sa_instance_state" in record_dict:
+            del record_dict["_sa_instance_state"]
+        record_dict["geo_polygon"] = json.loads(geojson_str) if geojson_str else None
+        recent_records.append(record_dict)
     
     return {
         "metrics": {
@@ -228,10 +238,18 @@ async def chat_with_database(chat: ChatMessage, db: Session = Depends(get_db)):
 
 @app.get("/api/records/{record_id}")
 async def get_single_record(record_id: int, db: Session = Depends(get_db)):
-    record = db.query(models.LandRecord).filter(models.LandRecord.id == record_id).first()
-    if not record:
+    result = db.query(models.LandRecord, func.ST_AsGeoJSON(models.LandRecord.geo_polygon).label('geojson')).filter(models.LandRecord.id == record_id).first()
+    
+    if not result:
         raise HTTPException(status_code=404, detail="Record not found")
-    return record
+        
+    record, geojson_str = result
+    record_dict = record.__dict__.copy()
+    if "_sa_instance_state" in record_dict:
+        del record_dict["_sa_instance_state"]
+    record_dict["geo_polygon"] = json.loads(geojson_str) if geojson_str else None
+    
+    return record_dict
 
 class VerificationApprovalRequest(BaseModel):
     registration_number: str
