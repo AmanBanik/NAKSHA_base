@@ -97,7 +97,7 @@ export default function CadastralMap({ geoJsonPolygon, center, isEditing, isFull
     }
 
     return (
-        <div style={{ minHeight: '400px', height: '100%', width: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', position: 'relative' }}>
+        <div style={{ height: isFullscreen ? '100%' : '400px', width: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', position: 'relative' }}>
             <MapContainer center={mapCenter} zoom={18} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
                 <ResizeHandler isFullscreen={isFullscreen} />
                 <TileLayer
