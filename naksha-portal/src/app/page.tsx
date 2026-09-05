@@ -182,8 +182,8 @@ export default function Dashboard() {
                               <td className="px-8 py-5 font-mono text-xs text-slate-400 group-hover:text-[#0D9488] transition-colors">{record.document_hash ? record.document_hash.substring(0, 10) + '...' : 'N/A'}</td>
                               <td className="px-8 py-5 text-right">
                                   {record.status === 'APPROVED' ? (
-                                      <button onClick={() => router.push('/verify')} className="inline-flex items-center gap-1.5 text-xs font-bold text-[#4d7c0f] hover:text-[#3f6212] bg-[#a3e635]/20 px-3 py-1.5 rounded-lg transition-all opacity-0 group-hover:opacity-100">
-                                          View Hash <ArrowRight size={14} />
+                                      <button onClick={() => router.push(`/certificate/${record.document_hash}`)} className="inline-flex items-center gap-1.5 text-xs font-bold text-[#4d7c0f] hover:text-[#3f6212] bg-[#a3e635]/20 px-3 py-1.5 rounded-lg transition-all opacity-0 group-hover:opacity-100">
+                                          View Certificate <ArrowRight size={14} />
                                       </button>
                                   ) : (
                                       <button onClick={() => router.push(`/verify-desk/${record.id}`)} className="inline-flex items-center gap-1.5 text-xs font-bold text-[#D97706] hover:text-[#B45309] bg-[#FBBF24]/20 px-3 py-1.5 rounded-lg transition-all opacity-0 group-hover:opacity-100">

@@ -257,6 +257,22 @@ async def get_single_record(record_id: int, db: Session = Depends(get_db)):
     
     return record_dict
 
+@app.get("/api/records/hash/{document_hash}")
+async def get_record_by_hash(document_hash: str, db: Session = Depends(get_db)):
+    """Public endpoint to verify a digitized record cryptographically by its hash."""
+    result = db.query(models.LandRecord, func.ST_AsGeoJSON(models.LandRecord.geo_polygon).label('geojson')).filter(models.LandRecord.document_hash == document_hash).first()
+    
+    if not result:
+        raise HTTPException(status_code=404, detail="Hash not found or invalid")
+        
+    record, geojson_str = result
+    record_dict = record.__dict__.copy()
+    if "_sa_instance_state" in record_dict:
+        del record_dict["_sa_instance_state"]
+    record_dict["geo_polygon"] = json.loads(geojson_str) if geojson_str else None
+    
+    return record_dict
+
 class VerificationApprovalRequest(BaseModel):
     registration_number: str
     acres: float
