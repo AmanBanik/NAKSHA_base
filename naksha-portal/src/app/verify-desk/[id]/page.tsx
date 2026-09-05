@@ -1,8 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import axios from 'axios';
-import { ArrowLeft, CheckCircle, AlertTriangle, FileText, Loader2, Save, Cpu } from 'lucide-react';
+import { ArrowLeft, CheckCircle, AlertTriangle, FileText, Loader2, Save, Cpu, Map as MapIcon } from 'lucide-react';
+
+const CadastralMap = dynamic(() => import('@/components/CadastralMap'), { ssr: false });
 
 export default function VerifyDesk({ params }: { params: { id: string } }) {
     const router = useRouter();
@@ -154,6 +157,13 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                                 Review the AI-extracted fields above against the original document on the left. Correct any misinterpretations. Clicking &quot;Approve&quot; will permanently encode these values into a cryptographic SHA-256 hash.
                             </p>
                         </div>
+                        
+                        {/* GIS Mapping Block */}
+                        <div className="mt-8 mb-12">
+                            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2"><MapIcon size={16} className="text-emerald-600"/> Cadastral Boundary Map</h2>
+                            <CadastralMap geoJsonPolygon={record.geo_polygon} />
+                        </div>
+
                     </div>
                 </div>
 
