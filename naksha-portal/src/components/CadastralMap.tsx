@@ -31,7 +31,16 @@ export default function CadastralMap({ geoJsonPolygon, center, isEditing, onPoly
         // Load initial geojson points if available
         if (geoJsonPolygon && geoJsonPolygon.coordinates && geoJsonPolygon.coordinates[0]) {
             const rawCoords = geoJsonPolygon.coordinates[0];
-            const leafletCoords = rawCoords.map((coord: [number, number]) => [coord[1], coord[0]] as [number, number]);
+            let leafletCoords = rawCoords.map((coord: [number, number]) => [coord[1], coord[0]] as [number, number]);
+            
+            // If the polygon is closed (first and last point are identical), remove the last point for editing
+            if (leafletCoords.length >= 4) {
+                const first = leafletCoords[0];
+                const last = leafletCoords[leafletCoords.length - 1];
+                if (first[0] === last[0] && first[1] === last[1]) {
+                    leafletCoords.pop();
+                }
+            }
             setPoints(leafletCoords);
         } else {
             setPoints([]);
