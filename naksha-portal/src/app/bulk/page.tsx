@@ -30,7 +30,11 @@ export default function BulkDigitization() {
       });
       
       // The API immediately returns task IDs while it processes in the background
-      const newTasks = res.data.tasks.map((id: string) => ({ id, status: 'PROCESSING' }));
+      const newTasks = res.data.tasks.map((t: any) => ({ 
+          id: typeof t === 'string' ? t : t.task_id, 
+          filename: typeof t === 'string' ? 'Document' : t.filename,
+          status: 'PROCESSING' 
+      }));
       setTaskStatus(newTasks);
       setFiles([]); // Clear the visual queue
       
@@ -122,7 +126,7 @@ export default function BulkDigitization() {
                                       <CheckCircle size={20} className="text-[#84cc16]" />
                                   )}
                                   <div>
-                                      <p className="text-sm font-bold text-[#1C1917]">Task ID: {task.id.substring(0,12)}...</p>
+                                      <p className="text-sm font-bold text-[#1C1917]">Task ID: {String(task.id || '').substring(0,12)}...</p>
                                       <p className="text-xs font-mono text-slate-500 mt-1 uppercase tracking-widest">{task.status}</p>
                                   </div>
                               </div>
