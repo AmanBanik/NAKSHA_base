@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import axios from 'axios';
-import { ArrowLeft, CheckCircle, AlertTriangle, FileText, Loader2, Save, Cpu, Map as MapIcon } from 'lucide-react';
+import { ArrowLeft, CheckCircle, AlertTriangle, FileText, Loader2, Save, Cpu, Map as MapIcon, Maximize, Minimize } from 'lucide-react';
 
 const CadastralMap = dynamic(() => import('@/components/CadastralMap'), { ssr: false });
 
@@ -22,6 +22,7 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
     // GIS Form States
     const [customPolygon, setCustomPolygon] = useState<any>(null);
     const [isMapEditing, setIsMapEditing] = useState(false);
+    const [isMapFullscreen, setIsMapFullscreen] = useState(false);
     const [rawCoordsInput, setRawCoordsInput] = useState('');
 
     useEffect(() => {
@@ -183,24 +184,32 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                         </div>
                         
                         {/* GIS Mapping Block */}
-                        <div className="mt-8 mb-12">
+                        <div className={isMapFullscreen ? "fixed inset-0 z-50 bg-white p-8 flex flex-col shadow-2xl" : "mt-8 mb-12"}>
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-sm font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                                     <MapIcon size={16} className="text-emerald-600"/> Cadastral Boundary
                                 </h2>
-                                <button 
-                                    onClick={() => {
-                                        setIsMapEditing(!isMapEditing);
-                                        if(!isMapEditing) setCustomPolygon(null); // Clear map for new drawing
-                                    }}
-                                    className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${isMapEditing ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                                >
-                                    {isMapEditing ? 'Stop Drawing' : '✏️ Draw Map'}
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    <button 
+                                        onClick={() => setIsMapFullscreen(!isMapFullscreen)}
+                                        className="text-xs font-bold px-3 py-1.5 rounded-lg transition-colors bg-blue-50 text-blue-700 hover:bg-blue-100 flex items-center gap-1"
+                                    >
+                                        {isMapFullscreen ? <><Minimize size={14}/> Exit Fullscreen</> : <><Maximize size={14}/> Expand Map</>}
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            setIsMapEditing(!isMapEditing);
+                                            if(!isMapEditing) setCustomPolygon(null);
+                                        }}
+                                        className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${isMapEditing ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                    >
+                                        {isMapEditing ? 'Stop Drawing' : '✏️ Draw Map'}
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Manual Coordinate Input */}
-                            <div className="mb-4">
+                            <div className="mb-4 shrink-0">
                                 <label className="block text-xs font-bold text-slate-400 mb-1">Manual Input: High-Precision Survey Array [[lng, lat]]</label>
                                 <textarea
                                     value={rawCoordsInput}
@@ -209,12 +218,14 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                                     className="w-full h-12 text-xs font-mono p-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
                                 />
                             </div>
-
-                            <CadastralMap 
-                                geoJsonPolygon={customPolygon} 
-                                isEditing={isMapEditing} 
-                                onPolygonChange={setCustomPolygon}
-                            />
+                            
+                            <div className="flex-1">
+                                <CadastralMap 
+                                    geoJsonPolygon={customPolygon} 
+                                    isEditing={isMapEditing} 
+                                    onPolygonChange={setCustomPolygon}
+                                />
+                            </div>
                         </div>
 
                     </div>
