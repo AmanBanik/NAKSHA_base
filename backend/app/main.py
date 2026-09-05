@@ -255,6 +255,7 @@ class VerificationApprovalRequest(BaseModel):
     registration_number: str
     acres: float
     primary_parties: list
+    geo_polygon: dict = None  # GeoJSON dict
     # We can accept the full corrected form data here
 
 @app.post("/api/records/{record_id}/approve")
@@ -271,6 +272,10 @@ async def approve_record(record_id: int, update_data: VerificationApprovalReques
     record.registration_number = update_data.registration_number
     record.acres = update_data.acres
     record.primary_parties = update_data.primary_parties
+    
+    if update_data.geo_polygon:
+        # Save custom drawn/pasted coordinates back into PostGIS using GeoJSON format
+        record.geo_polygon = func.ST_GeomFromGeoJSON(json.dumps(update_data.geo_polygon))
     
     # RE-MINT HASH (Because data might have changed!)
     import hashlib

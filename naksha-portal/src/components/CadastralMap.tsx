@@ -1,32 +1,67 @@
 'use client';
 
-import { MapContainer, TileLayer, Polygon, Popup } from 'react-leaflet';
+import { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Polygon, Popup, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-
-// Fix leaflet marker icon issue in Next.js (though we only use polygons here, it's good practice)
 import L from 'leaflet';
+
 L.Icon.Default.imagePath = '/images/';
 
 interface MapProps {
     geoJsonPolygon: any;
     center?: [number, number];
+    isEditing?: boolean;
+    onPolygonChange?: (geoJson: any) => void;
 }
 
-export default function CadastralMap({ geoJsonPolygon, center }: MapProps) {
-    if (!geoJsonPolygon || !geoJsonPolygon.coordinates) {
-        return <div className="p-4 bg-gray-50 border rounded-lg text-gray-500 text-center">No spatial data available for this record.</div>;
-    }
+// Map event listener component to capture clicks
+function ClickHandler({ onMapClick }: { onMapClick: (latlng: L.LatLng) => void }) {
+    useMapEvents({
+        click(e) {
+            onMapClick(e.latlng);
+        },
+    });
+    return null;
+}
 
-    // GeoJSON Polygon coordinates are typically [[[lng, lat], [lng, lat], ...]]
-    // Leaflet Polygon expects [[lat, lng], [lat, lng], ...]
-    const rawCoords = geoJsonPolygon.coordinates[0];
-    const leafletCoords = rawCoords.map((coord: [number, number]) => [coord[1], coord[0]] as [number, number]);
+export default function CadastralMap({ geoJsonPolygon, center, isEditing, onPolygonChange }: MapProps) {
+    const [points, setPoints] = useState<[number, number][]>([]);
 
-    // Calculate center if not provided (simple bounding box center)
-    let mapCenter = center;
-    if (!mapCenter) {
-        const lats = leafletCoords.map((c: [number, number]) => c[0]);
-        const lngs = leafletCoords.map((c: [number, number]) => c[1]);
+    useEffect(() => {
+        // Load initial geojson points if available
+        if (geoJsonPolygon && geoJsonPolygon.coordinates && geoJsonPolygon.coordinates[0]) {
+            const rawCoords = geoJsonPolygon.coordinates[0];
+            const leafletCoords = rawCoords.map((coord: [number, number]) => [coord[1], coord[0]] as [number, number]);
+            setPoints(leafletCoords);
+        } else {
+            setPoints([]);
+        }
+    }, [geoJsonPolygon]);
+
+    const handleMapClick = (latlng: L.LatLng) => {
+        if (!isEditing) return;
+        const newPoints = [...points, [latlng.lat, latlng.lng] as [number, number]];
+        setPoints(newPoints);
+        
+        if (onPolygonChange) {
+            // Convert to GeoJSON format: [[lng, lat]]
+            // Note: GeoJSON polygons must be closed (first and last point same), but we can just send the ring.
+            const geoJsonCoords = newPoints.map(p => [p[1], p[0]]);
+            if (newPoints.length >= 3) {
+                // Close the loop for valid GeoJSON
+                geoJsonCoords.push(geoJsonCoords[0]);
+            }
+            onPolygonChange({
+                type: 'Polygon',
+                coordinates: [geoJsonCoords]
+            });
+        }
+    };
+
+    let mapCenter = center || [22.5726, 88.3639]; // Default to Kolkata if empty
+    if (!center && points.length > 0) {
+        const lats = points.map(c => c[0]);
+        const lngs = points.map(c => c[1]);
         mapCenter = [
             (Math.min(...lats) + Math.max(...lats)) / 2,
             (Math.min(...lngs) + Math.max(...lngs)) / 2,
@@ -34,18 +69,30 @@ export default function CadastralMap({ geoJsonPolygon, center }: MapProps) {
     }
 
     return (
-        <div style={{ height: '400px', width: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+        <div style={{ height: '400px', width: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', position: 'relative' }}>
             <MapContainer center={mapCenter} zoom={18} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                <Polygon positions={leafletCoords} pathOptions={{ color: '#10b981', fillColor: '#10b981', fillOpacity: 0.4 }}>
-                    <Popup>
-                        Verified Land Boundary
-                    </Popup>
-                </Polygon>
+                
+                {isEditing && <ClickHandler onMapClick={handleMapClick} />}
+                
+                {points.length > 0 && (
+                    <Polygon positions={points} pathOptions={{ color: isEditing ? '#f59e0b' : '#10b981', fillColor: isEditing ? '#f59e0b' : '#10b981', fillOpacity: 0.4 }}>
+                        {!isEditing && <Popup>Verified Land Boundary</Popup>}
+                    </Polygon>
+                )}
+                
+                {isEditing && points.map((p, i) => (
+                    <Marker key={i} position={p} />
+                ))}
             </MapContainer>
+            {isEditing && (
+                <div className="absolute top-2 right-2 z-[400] bg-white px-3 py-1.5 rounded shadow text-xs font-bold text-slate-700 pointer-events-none">
+                    Drawing Mode: Click map to place points
+                </div>
+            )}
         </div>
     );
 }

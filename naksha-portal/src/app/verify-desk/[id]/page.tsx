@@ -18,6 +18,11 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
     const [regNumber, setRegNumber] = useState('');
     const [acres, setAcres] = useState<number>(0);
     const [primaryParty, setPrimaryParty] = useState('');
+    
+    // GIS Form States
+    const [customPolygon, setCustomPolygon] = useState<any>(null);
+    const [isMapEditing, setIsMapEditing] = useState(false);
+    const [rawCoordsInput, setRawCoordsInput] = useState('');
 
     useEffect(() => {
         axios.get(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}`}/api/records/${params.id}`)
@@ -26,6 +31,7 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                 setRegNumber(res.data.registration_number || '');
                 setAcres(res.data.acres || 0);
                 setPrimaryParty(res.data.primary_parties?.[0] || '');
+                setCustomPolygon(res.data.geo_polygon);
                 setLoading(false);
             })
             .catch(err => {
@@ -34,19 +40,37 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
             });
     }, [params.id]);
 
+    const handleCoordsInput = (val: string) => {
+        setRawCoordsInput(val);
+        try {
+            // E.g. [[88.3639, 22.5726], [88.3640, 22.5727]]
+            let parsed = JSON.parse(val);
+            if (Array.isArray(parsed) && parsed.length >= 3) {
+                // Ensure loop is closed
+                if (parsed[0][0] !== parsed[parsed.length - 1][0] || parsed[0][1] !== parsed[parsed.length - 1][1]) {
+                    parsed.push(parsed[0]);
+                }
+                setCustomPolygon({
+                    type: "Polygon",
+                    coordinates: [parsed]
+                });
+            }
+        } catch(e) {
+            // Invalid JSON, ignore
+        }
+    }
+
     const handleApprove = async () => {
         setApproving(true);
         try {
             const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}`}/api/records/${params.id}/approve`, {
                 registration_number: regNumber,
                 acres: acres,
-                primary_parties: [primaryParty]
+                primary_parties: [primaryParty],
+                geo_polygon: customPolygon
             });
             setSuccessHash(res.data.hash);
-            // After 3 seconds, redirect back to dashboard
-            setTimeout(() => {
-                router.push('/');
-            }, 3000);
+            setTimeout(() => router.push('/'), 3000);
         } catch (err) {
             console.error(err);
             alert("Failed to approve record.");
@@ -160,8 +184,37 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                         
                         {/* GIS Mapping Block */}
                         <div className="mt-8 mb-12">
-                            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2"><MapIcon size={16} className="text-emerald-600"/> Cadastral Boundary Map</h2>
-                            <CadastralMap geoJsonPolygon={record.geo_polygon} />
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-sm font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                    <MapIcon size={16} className="text-emerald-600"/> Cadastral Boundary
+                                </h2>
+                                <button 
+                                    onClick={() => {
+                                        setIsMapEditing(!isMapEditing);
+                                        if(!isMapEditing) setCustomPolygon(null); // Clear map for new drawing
+                                    }}
+                                    className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${isMapEditing ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                >
+                                    {isMapEditing ? 'Stop Drawing' : '✏️ Draw Map'}
+                                </button>
+                            </div>
+
+                            {/* Manual Coordinate Input */}
+                            <div className="mb-4">
+                                <label className="block text-xs font-bold text-slate-400 mb-1">Manual Input: High-Precision Survey Array [[lng, lat]]</label>
+                                <textarea
+                                    value={rawCoordsInput}
+                                    onChange={(e) => handleCoordsInput(e.target.value)}
+                                    placeholder="e.g. [[88.363, 22.572], [88.364, 22.573], ...]"
+                                    className="w-full h-12 text-xs font-mono p-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
+                                />
+                            </div>
+
+                            <CadastralMap 
+                                geoJsonPolygon={customPolygon} 
+                                isEditing={isMapEditing} 
+                                onPolygonChange={setCustomPolygon}
+                            />
                         </div>
 
                     </div>
