@@ -42,13 +42,19 @@ def seed():
     markdown_lines.append("| State | Username | Password | Passkey |")
     markdown_lines.append("|---|---|---|---|")
     
+    generated_usernames = set()
+    
     for state in STATES:
         # Generate 1-2 users per state
         num_users = random.randint(1, 2)
         for _ in range(num_users):
-            fname = random.choice(FIRST_NAMES).lower()
-            dob = f"{random.randint(10,28)}{random.randint(10,12)}{random.randint(1980, 2000)}"
-            username = f"{fname}{dob}"
+            while True:
+                fname = random.choice(FIRST_NAMES).lower()
+                dob = f"{random.randint(10,28)}{random.randint(10,12)}{random.randint(1980, 2000)}"
+                username = f"{fname}{dob}"
+                if username not in generated_usernames:
+                    generated_usernames.add(username)
+                    break
             password = generate_password(state)
             passkey = generate_passkey()
             
