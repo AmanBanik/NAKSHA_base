@@ -1,5 +1,6 @@
 import os
 import json
+import typing
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -260,7 +261,7 @@ class VerificationApprovalRequest(BaseModel):
     registration_number: str
     acres: float
     primary_parties: list
-    geo_polygon: dict = None  # GeoJSON dict
+    geo_polygon: typing.Optional[dict] = None  # GeoJSON dict
     # We can accept the full corrected form data here
 
 @app.post("/api/records/{record_id}/approve")
