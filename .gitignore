@@ -2,7 +2,8 @@
 
 # 1. Mock Directories & Sensitive Credentials
 pre_mvp/
-backend/credentials.md
+credentials.md
+credentials_master_list.md
 
 # 2. Python / Backend
 backend/venv/
