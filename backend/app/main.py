@@ -440,7 +440,7 @@ def generate_legacy_renewal_pdf(record_id: int, db: Session = Depends(get_db)):
     
     c.setFont("Helvetica-Bold", 12)
     c.setFillColor(HexColor("#374151"))
-    c.drawCentredString(width / 2.0, height - 100, "MINISTRY OF HOUSING AND URBAN AFFAIRS")
+    c.drawCentredString(width / 2.0, height - 100, "MINISTRY OF RURAL DEVELOPMENT")
     
     c.setFont("Helvetica-Bold", 14)
     c.setFillColor(HexColor("#0f766e"))
