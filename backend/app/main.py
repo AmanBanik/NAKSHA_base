@@ -284,8 +284,11 @@ class VerificationApprovalRequest(BaseModel):
     geo_polygon: typing.Optional[dict] = None  # GeoJSON dict
     # We can accept the full corrected form data here
 
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, BackgroundTasks
+
+# ... (in approve_record)
 @app.post("/api/records/{record_id}/approve")
-async def approve_record(record_id: int, update_data: VerificationApprovalRequest, db: Session = Depends(get_db)):
+async def approve_record(record_id: int, update_data: VerificationApprovalRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """
     Called by the officer when they click 'Approve & Mint Hash' on the split-screen desk.
     Updates the fields in case the human corrected AI errors, updates status, and generates the final hash.
@@ -340,6 +343,12 @@ async def approve_record(record_id: int, update_data: VerificationApprovalReques
     record.status = "APPROVED"
     
     db.commit()
+    
+    # Trigger Gmail Notification in the background!
+    from app.notifications import send_approval_email
+    owner_name = record.primary_parties[0] if record.primary_parties else "Citizen"
+    background_tasks.add_task(send_approval_email, owner_name, record.registration_number, final_hash)
+    
     return {"message": "Record successfully verified and hashed to the blockchain ledger.", "hash": final_hash}
 
 # --- AZURE CLOUD HEALTH CHECK ---
