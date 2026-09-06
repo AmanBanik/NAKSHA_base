@@ -73,6 +73,8 @@ Required JSON Schema fields (TRANSLATE ALL VALUES TO ENGLISH):
 - additional_parameters (object)
 - ai_confidence (number: A score from 0 to 100 based on how legible the document was and your confidence in the extracted data accuracy)
 
+CRITICAL LANGUAGE INSTRUCTION: Azure OCR sometimes misclassifies noisy Bengali script as Hindi (Devanagari). If you see Hindi characters that phonetically sound like Bengali names or locations (e.g., 'श्री पूर्वे इन्द्र नाथ' instead of 'শ্রী পূর্বে ইন্দ্র নাথ'), you MUST recognize this as a Bengali document and accurately translate the correct Bengali names/entities into English.
+
 If a field is completely missing or illegible, return null. Return ONLY a valid JSON object.
 """
 
@@ -93,8 +95,8 @@ def process_document_task(b64_file: str, content_type: str):
         else:
             optimized_bytes = file_bytes
 
-        # Step 1: Azure Document Intelligence (With Bengali Language Hint)
-        poller = doc_client.begin_analyze_document("prebuilt-read", body=optimized_bytes, content_type=content_type)
+        # Step 1: Azure Document Intelligence (Upgraded to prebuilt-layout for advanced multi-language auto-detection)
+        poller = doc_client.begin_analyze_document("prebuilt-layout", body=optimized_bytes, content_type=content_type)
         raw_text = poller.result().content
 
         # Step 2: Azure OpenAI GPT-4o
