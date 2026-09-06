@@ -71,9 +71,10 @@ Required JSON Schema fields (TRANSLATE ALL VALUES TO ENGLISH):
 - primary_parties (list of strings)
 - boundaries (list of strings: e.g. ["North: River", "South: Road"])
 - additional_parameters (object)
+- reconstructed_native_text (string: You MUST phonetically reconstruct the entire raw OCR text into the actual native language of the document. If it is a Bengali document mistakenly OCR'd as Hindi, rewrite the entire text in perfect Bengali script.)
 - ai_confidence (number: A score from 0 to 100 based on how legible the document was and your confidence in the extracted data accuracy)
 
-CRITICAL LANGUAGE INSTRUCTION: Azure OCR sometimes misclassifies noisy Bengali script as Hindi (Devanagari). If you see Hindi characters that phonetically sound like Bengali names or locations (e.g., 'श्री पूर्वे इन्द्र नाथ' instead of 'শ্রী পূর্বে ইন্দ্র নাথ'), you MUST recognize this as a Bengali document and accurately translate the correct Bengali names/entities into English.
+CRITICAL LANGUAGE INSTRUCTION: Azure OCR sometimes misclassifies noisy Bengali script as Hindi (Devanagari). If you see Hindi characters that phonetically sound like Bengali names or locations, you MUST recognize this as a Bengali document, translate the fields to English for the JSON keys, but use perfect Bengali script for the `reconstructed_native_text` field.
 
 If a field is completely missing or illegible, return null. Return ONLY a valid JSON object.
 """
@@ -136,7 +137,7 @@ def process_document_task(b64_file: str, content_type: str):
                 primary_parties=structured_data.get("primary_parties"),
                 boundaries=structured_data.get("boundaries"),
                 additional_parameters=structured_data.get("additional_parameters"),
-                raw_ocr_text=raw_text,
+                raw_ocr_text=structured_data.get("reconstructed_native_text") or raw_text,
                 ai_confidence=confidence,
                 document_hash=doc_hash,
                 status=status
