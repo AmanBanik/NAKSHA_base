@@ -140,9 +140,11 @@ export default function Dashboard() {
                           <Filter size={16} /> Status: All
                       </button>
                   </div>
-                  <button className="bg-gradient-to-r from-[#0D9488] to-[#059669] hover:from-[#0F766E] hover:to-[#047857] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-teal-500/20 transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-95">
-                      <Download size={16} /> Export Report
-                  </button>
+                    <button 
+                        onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://naksha-6bytes.koreacentral.cloudapp.azure.com:8000'}/api/export/csv`, '_blank')}
+                        className="bg-gradient-to-r from-[#0D9488] to-[#059669] hover:from-[#0F766E] hover:to-[#047857] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-teal-500/20 transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-95">
+                        <Download size={16} /> Export Report
+                    </button>
               </div>
 
               {/* Table */}

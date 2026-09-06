@@ -120,10 +120,6 @@ export default function DigitalPropertyCard({ params }: { params: { hash: string
                                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Issuance Date</p>
                                 <p className="text-md font-medium text-slate-700">{new Date(record.created_at).toLocaleString()}</p>
                             </div>
-                            <div>
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">AI Confidence Score</p>
-                                <p className="text-md font-medium text-slate-700">{record.ai_confidence ? `${record.ai_confidence}%` : 'Manual Override'}</p>
-                            </div>
                         </div>
                     </div>
 
@@ -131,12 +127,20 @@ export default function DigitalPropertyCard({ params }: { params: { hash: string
 
                 <div className="bg-slate-50 p-6 border-t border-slate-200 flex justify-between items-center print:hidden">
                     <p className="text-xs text-slate-400 font-medium">This document is cryptographically secured on the NAKSHA platform.</p>
-                    <button 
-                        onClick={() => window.print()} 
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold shadow-md transition-colors flex items-center gap-2 text-sm"
-                    >
-                        <Download size={16} /> Print / Save PDF
-                    </button>
+                    <div className="flex gap-4">
+                        <button 
+                            onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://naksha-6bytes.koreacentral.cloudapp.azure.com:8000'}/api/records/${record.id}/pdf`, '_blank')} 
+                            className="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-bold shadow-md transition-colors flex items-center gap-2 text-sm"
+                        >
+                            <Download size={16} /> Download Legacy PDF
+                        </button>
+                        <button 
+                            onClick={() => window.print()} 
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold shadow-md transition-colors flex items-center gap-2 text-sm"
+                        >
+                            <Download size={16} /> Print Web Certificate
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

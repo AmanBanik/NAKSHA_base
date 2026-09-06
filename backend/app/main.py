@@ -387,3 +387,63 @@ def force_database_migration(db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         return {"status": "error", "message": str(e)}
+
+
+from fastapi.responses import Response, StreamingResponse
+import io
+import csv
+
+@app.get("/api/export/csv")
+def export_records_csv(db: Session = Depends(get_db)):
+    records = db.query(models.LandRecord).all()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['ID', 'State', 'Registration Number', 'Status', 'Acres', 'Historical Price', 'AI Current Value', 'Hash', 'Date'])
+    
+    for r in records:
+        writer.writerow([r.id, r.state_jurisdiction, r.registration_number, r.status, r.acres, r.price_amount, r.estimated_current_value, r.document_hash, r.created_at])
+        
+    return Response(content=output.getvalue(), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=land_records_export.csv"})
+
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
+@app.get("/api/records/{record_id}/pdf")
+def generate_legacy_renewal_pdf(record_id: int, db: Session = Depends(get_db)):
+    record = db.query(models.LandRecord).filter(models.LandRecord.id == record_id).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="Record not found")
+        
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(50, 750, "RENEWED DIGITAL LAND TITLE (LEGACY DOC)")
+    c.setFont("Helvetica", 12)
+    c.drawString(50, 730, "------------------------------------------------------------")
+    
+    c.drawString(50, 700, f"ID: IND-LR-{record.id}")
+    c.drawString(50, 680, f"Registration No: {record.registration_number or 'N/A'}")
+    owner = record.primary_parties[0] if record.primary_parties and len(record.primary_parties) > 0 else 'N/A'
+    c.drawString(50, 660, f"Primary Owner: {owner}")
+    c.drawString(50, 640, f"Area: {record.acres} Acres")
+    if record.boundaries:
+        c.drawString(50, 620, f"Boundaries: {', '.join(record.boundaries)}")
+    
+    c.drawString(50, 580, f"Historical Value: INR {record.price_amount or 'N/A'}")
+    c.drawString(50, 560, f"AI Assessed Current Value: INR {record.estimated_current_value or 'N/A'}")
+    
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(50, 500, f"Cryptographic Hash: {record.document_hash}")
+    c.drawString(50, 480, "Government of India - Officially Minted via NAKSHA")
+    
+    # Simple Mock QR Code Box (ReportLab has QR plugins, but drawing a box is a quick hackathon placeholder)
+    c.rect(400, 650, 100, 100)
+    c.drawString(410, 700, "[ QR CODE ]")
+    
+    c.showPage()
+    c.save()
+    
+    buffer.seek(0)
+    return StreamingResponse(buffer, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename=renewed_title_{record.id}.pdf"})
