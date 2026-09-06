@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Search, Filter, FileText, AlertTriangle, Download, ArrowRight, ShieldAlert, Cpu } from 'lucide-react';
+import { Search, Filter, FileText, AlertTriangle, Download, ArrowRight, ShieldAlert, Cpu, BarChart3 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
@@ -140,11 +140,18 @@ export default function Dashboard() {
                           <Filter size={16} /> Status: All
                       </button>
                   </div>
-                    <button 
-                        onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://naksha-6bytes.koreacentral.cloudapp.azure.com:8000'}/api/export/csv`, '_blank')}
-                        className="bg-gradient-to-r from-[#0D9488] to-[#059669] hover:from-[#0F766E] hover:to-[#047857] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-teal-500/20 transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-95">
-                        <Download size={16} /> Export Report
-                    </button>
+                  <div className="flex items-center gap-3">
+                      <button 
+                          onClick={() => router.push('/analytics')}
+                          className="bg-slate-800 hover:bg-slate-700 text-emerald-400 px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2 hover:scale-[1.02] border border-slate-700">
+                          <BarChart3 size={16} /> Ministry Analytics
+                      </button>
+                      <button 
+                          onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://naksha-6bytes.koreacentral.cloudapp.azure.com:8000'}/api/export/csv`, '_blank')}
+                          className="bg-gradient-to-r from-[#0D9488] to-[#059669] hover:from-[#0F766E] hover:to-[#047857] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-teal-500/20 transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-95">
+                          <Download size={16} /> Export Report
+                      </button>
+                  </div>
               </div>
 
               {/* Table */}
