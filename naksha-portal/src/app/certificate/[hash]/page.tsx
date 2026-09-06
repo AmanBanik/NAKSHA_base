@@ -32,9 +32,9 @@ export default function DigitalPropertyCard({ params }: { params: { hash: string
         }).join(' ');
     };
 
-    const offlinePayload = `VERIFIED DIGITAL TITLE\n----------------------\nID: IND-LR-${record.id}\nReg No: ${record.registration_number || 'N/A'}\nOwner: ${maskString(record.primary_parties?.[0])}\nArea: ${record.acres} Acres\nHash: ${record.document_hash}\nGovt. of India Auth`;
+    const offlinePayload = `VERIFIED DIGITAL TITLE\n----------------------\nID: IND-LR-${record.id}\nReg No: ${record.registration_number || 'N/A'}\nOwner: ${maskString(record.primary_parties?.[0])}\nArea: ${record.acres} Acres\nHash: ${record.document_hash}\nGovt. of India Auth\n\nVerify Online:\nhttps://naksha-6bytes.koreacentral.cloudapp.azure.com:3000/certificate/${params.hash}`;
     
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(offlinePayload)}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(offlinePayload)}`;
 
     return (
         <div className="min-h-screen bg-slate-100 p-8 flex justify-center items-start print:bg-white print:p-0">
