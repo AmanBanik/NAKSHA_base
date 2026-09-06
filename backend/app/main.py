@@ -406,8 +406,12 @@ def export_records_csv(db: Session = Depends(get_db)):
         
     return Response(content=output.getvalue(), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=land_records_export.csv"})
 
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
+from reportlab.lib.colors import HexColor
+from reportlab.lib.units import inch
+from reportlab.lib.utils import ImageReader
+import qrcode
 
 @app.get("/api/records/{record_id}/pdf")
 def generate_legacy_renewal_pdf(record_id: int, db: Session = Depends(get_db)):
@@ -416,34 +420,119 @@ def generate_legacy_renewal_pdf(record_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Record not found")
         
     buffer = io.BytesIO()
-    c = canvas.Canvas(buffer, pagesize=letter)
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
     
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(50, 750, "RENEWED DIGITAL LAND TITLE (LEGACY DOC)")
-    c.setFont("Helvetica", 12)
-    c.drawString(50, 730, "------------------------------------------------------------")
+    # 1. Official Border
+    c.setStrokeColor(HexColor("#0f766e"))
+    c.setLineWidth(3)
+    c.rect(30, 30, width - 60, height - 60)
     
-    c.drawString(50, 700, f"ID: IND-LR-{record.id}")
-    c.drawString(50, 680, f"Registration No: {record.registration_number or 'N/A'}")
+    # Inner border
+    c.setStrokeColor(HexColor("#115e59"))
+    c.setLineWidth(1)
+    c.rect(35, 35, width - 70, height - 70)
+    
+    # 2. Header
+    c.setFillColor(HexColor("#064e3b"))
+    c.setFont("Helvetica-Bold", 24)
+    c.drawCentredString(width / 2.0, height - 80, "GOVERNMENT OF N.A.K.S.H.A.")
+    
+    c.setFont("Helvetica-Bold", 14)
+    c.setFillColor(HexColor("#0f766e"))
+    c.drawCentredString(width / 2.0, height - 105, "RENEWED DIGITAL PROPERTY CARD")
+    
+    c.setStrokeColor(HexColor("#d1d5db"))
+    c.line(100, height - 120, width - 100, height - 120)
+    
+    # 3. Main Content
+    c.setFillColor(HexColor("#1f2937"))
+    c.setFont("Helvetica", 11)
+    
+    start_y = height - 180
+    line_spacing = 25
+    
+    c.drawString(70, start_y, "UNIQUE IDENTIFIER:")
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(250, start_y, f"IND-LR-{record.id}")
+    
+    c.setFont("Helvetica", 11)
+    c.drawString(70, start_y - line_spacing, "REGISTRATION NO:")
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(250, start_y - line_spacing, str(record.registration_number or 'N/A'))
+    
+    c.setFont("Helvetica", 11)
+    c.drawString(70, start_y - line_spacing*2, "PRIMARY OWNER:")
     owner = record.primary_parties[0] if record.primary_parties and len(record.primary_parties) > 0 else 'N/A'
-    c.drawString(50, 660, f"Primary Owner: {owner}")
-    c.drawString(50, 640, f"Area: {record.acres} Acres")
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(250, start_y - line_spacing*2, owner)
+    
+    c.setFont("Helvetica", 11)
+    c.drawString(70, start_y - line_spacing*3, "TOTAL AREA:")
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(250, start_y - line_spacing*3, f"{record.acres} Acres")
+    
     if record.boundaries:
-        c.drawString(50, 620, f"Boundaries: {', '.join(record.boundaries)}")
+        c.setFont("Helvetica", 11)
+        c.drawString(70, start_y - line_spacing*4, "BOUNDARIES:")
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(250, start_y - line_spacing*4, ", ".join(record.boundaries))
+        
+    c.setFont("Helvetica", 11)
+    c.drawString(70, start_y - line_spacing*6, "HISTORICAL VALUE:")
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(250, start_y - line_spacing*6, f"INR {record.price_amount or 'N/A'}")
     
-    c.drawString(50, 580, f"Historical Value: INR {record.price_amount or 'N/A'}")
-    c.drawString(50, 560, f"AI Assessed Current Value: INR {record.estimated_current_value or 'N/A'}")
+    c.setFont("Helvetica", 11)
+    c.drawString(70, start_y - line_spacing*7, "AI ASSESSED CURRENT VALUE:")
+    c.setFont("Helvetica-Bold", 12)
+    c.setFillColor(HexColor("#065f46"))
+    val = f"INR {record.estimated_current_value:,.2f}" if record.estimated_current_value else "N/A"
+    c.drawString(250, start_y - line_spacing*7, val)
     
+    # 4. Footer & Cryptographic Details
+    c.setFillColor(HexColor("#4b5563"))
+    c.setFont("Helvetica", 10)
+    c.drawString(70, 180, "This document is cryptographically minted and immutable.")
+    c.drawString(70, 160, "Cryptographic Hash:")
     c.setFont("Helvetica-Bold", 10)
-    c.drawString(50, 500, f"Cryptographic Hash: {record.document_hash}")
-    c.drawString(50, 480, "Government of India - Officially Minted via NAKSHA")
+    c.drawString(190, 160, str(record.document_hash))
     
-    # Simple Mock QR Code Box (ReportLab has QR plugins, but drawing a box is a quick hackathon placeholder)
-    c.rect(400, 650, 100, 100)
-    c.drawString(410, 700, "[ QR CODE ]")
+    # 5. Generate REAL QR Code using qrcode library
+    import qrcode
+    qr = qrcode.QRCode(box_size=4, border=2)
+    
+    def mask_string(s):
+        if not s: return 'N/A'
+        words = s.split(' ')
+        res = []
+        for w in words:
+            if len(w) <= 2: res.append(w)
+            else: res.append(w[0] + '*' * (len(w)-2) + w[-1])
+        return ' '.join(res)
+        
+    payload = f"VERIFIED DIGITAL TITLE
+ID: IND-LR-{record.id}
+Reg: {record.registration_number}
+Owner: {mask_string(owner)}
+Area: {record.acres} Acres
+Hash: {record.document_hash}"
+    qr.add_data(payload)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    import tempfile
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+        img.save(tmp.name)
+        c.drawImage(tmp.name, width - 200, 100, width=120, height=120)
+        
+    c.setFont("Helvetica-Bold", 10)
+    c.setFillColor(HexColor("#115e59"))
+    c.drawCentredString(width - 140, 85, "SCAN TO VERIFY")
     
     c.showPage()
     c.save()
     
     buffer.seek(0)
     return StreamingResponse(buffer, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename=renewed_title_{record.id}.pdf"})
+
