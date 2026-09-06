@@ -282,6 +282,7 @@ class VerificationApprovalRequest(BaseModel):
     estimated_current_value: typing.Optional[float] = None
     boundaries: typing.Optional[list] = None
     geo_polygon: typing.Optional[dict] = None  # GeoJSON dict
+    owner_email: typing.Optional[str] = None
     # We can accept the full corrected form data here
 
 from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, BackgroundTasks
@@ -329,6 +330,7 @@ async def approve_record(record_id: int, update_data: VerificationApprovalReques
     record.land_rate = update_data.land_rate
     record.estimated_current_value = update_data.estimated_current_value
     record.boundaries = update_data.boundaries
+    record.owner_email = update_data.owner_email
     
     if update_data.geo_polygon:
         # Save custom drawn/pasted coordinates back into PostGIS using GeoJSON format
@@ -347,7 +349,7 @@ async def approve_record(record_id: int, update_data: VerificationApprovalReques
     # Trigger Gmail Notification in the background!
     from app.notifications import send_approval_email
     owner_name = record.primary_parties[0] if record.primary_parties else "Citizen"
-    background_tasks.add_task(send_approval_email, owner_name, record.registration_number, final_hash)
+    background_tasks.add_task(send_approval_email, owner_name, record.registration_number, final_hash, record.owner_email)
     
     return {"message": "Record successfully verified and hashed to the blockchain ledger.", "hash": final_hash}
 

@@ -28,6 +28,7 @@ class LandRecord(Base):
     estimated_current_value = Column(Float, nullable=True) # AI calculated current day value
     currency = Column(String, nullable=True)
     historical_date_note = Column(Text, nullable=True)
+    owner_email = Column(String, nullable=True) # Citizen contact email for Phase 2 Notifications
     
     # Store lists and dynamic key-value pairs as JSON natively in Postgres
     primary_parties = Column(JSON, nullable=True)

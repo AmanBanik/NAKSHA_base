@@ -22,6 +22,7 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
     const [landRate, setLandRate] = useState<number>(0);
     const [currentValue, setCurrentValue] = useState<number>(0);
     const [boundaries, setBoundaries] = useState('');
+    const [ownerEmail, setOwnerEmail] = useState('');
     
     // GIS Form States
     const [customPolygon, setCustomPolygon] = useState<any>(null);
@@ -40,6 +41,7 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                 setLandRate(res.data.land_rate || 0);
                 setCurrentValue(res.data.estimated_current_value || 0);
                 setBoundaries(res.data.boundaries ? res.data.boundaries.join(', ') : '');
+                setOwnerEmail(res.data.owner_email || '');
                 setCustomPolygon(res.data.geo_polygon);
                 setLoading(false);
             })
@@ -79,8 +81,9 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                 price_amount: price,
                 land_rate: landRate,
                 estimated_current_value: currentValue,
-                boundaries: boundaries.split(',').map(s => s.trim()),
-                geo_polygon: customPolygon
+                boundaries: boundaries.split(',').map(b => b.trim()),
+                geo_polygon: customPolygon,
+                owner_email: ownerEmail
             });
             setSuccessHash(res.data.hash);
             setTimeout(() => router.push('/'), 3000);
@@ -203,7 +206,11 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                             <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Boundaries (Comma separated)</label>
                             <input type="text" value={boundaries} onChange={(e) => setBoundaries(e.target.value)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none" />
                         </div>
-
+                        
+                        <div>
+                            <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Citizen Contact Email (For PDF Dispatch)</label>
+                            <input type="email" placeholder="e.g. citizen@gmail.com" value={ownerEmail} onChange={(e) => setOwnerEmail(e.target.value)} className="w-full px-4 py-3 bg-green-50 border border-green-200 rounded-xl focus:outline-none focus:border-green-400" />
+                        </div>
 
                         <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl mt-8">
                             <h4 className="text-sm font-bold text-blue-900 mb-1">Human-in-the-Loop Process</h4>

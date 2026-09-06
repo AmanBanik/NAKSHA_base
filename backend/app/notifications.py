@@ -2,7 +2,7 @@ import smtplib
 from email.message import EmailMessage
 import os
 
-def send_approval_email(owner_name: str, registration_number: str, doc_hash: str):
+def send_approval_email(owner_name: str, registration_number: str, doc_hash: str, target_owner_email: str = None):
     """
     Phase 2 Notification Engine: Sends an official Government Email to the citizen 
     once the Magistrate approves their digitized land record.
@@ -12,12 +12,11 @@ def send_approval_email(owner_name: str, registration_number: str, doc_hash: str
     
     # Fallback to test mode if credentials are missing
     if not sender_email or not app_password:
-        print(f"\n[MOCK EMAIL SENT] To: {owner_name} | Subj: Property {registration_number} Approved! (Configure .env to send real email)\n")
+        print(f"\n[MOCK EMAIL SENT] To: {target_owner_email or owner_name} | Subj: Property {registration_number} Approved! (Configure .env to send real email)\n")
         return
 
-    # In a real system, you would query the citizen's email from the DB.
-    # For the SIH Demo, we'll send it back to the sender_email so the judges can see it arrive on the presenter's phone.
-    target_email = sender_email 
+    # Route dynamically to the citizen, otherwise fallback to sender_email for demo loop
+    target_email = target_owner_email if target_owner_email else sender_email 
 
     msg = EmailMessage()
     msg['Subject'] = f"GOVT OF INDIA: Your Property Record ({registration_number}) is now Digitized"
