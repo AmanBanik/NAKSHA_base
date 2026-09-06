@@ -7,6 +7,7 @@ from app import models
 from app.auth import get_password_hash
 
 # Drop the tables so we can recreate them with the new PostGIS columns
+models.AIFeedback.__table__.drop(engine, checkfirst=True)
 models.User.__table__.drop(engine, checkfirst=True)
 models.LandRecord.__table__.drop(engine, checkfirst=True)
 models.Base.metadata.create_all(bind=engine)
