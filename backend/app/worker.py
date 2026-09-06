@@ -71,10 +71,10 @@ Required JSON Schema fields (TRANSLATE ALL VALUES TO ENGLISH):
 - primary_parties (list of strings)
 - boundaries (list of strings: e.g. ["North: River", "South: Road"])
 - additional_parameters (object)
-- reconstructed_native_text (string: You MUST phonetically reconstruct the entire raw OCR text into the actual native language of the document. If it is a Bengali document mistakenly OCR'd as Hindi, rewrite the entire text in perfect Bengali script.)
+- reconstructed_native_text (string: You MUST phonetically reconstruct the entire raw OCR text into the actual native language of the document. For example, if it is a Bengali, Marathi, or Gujarati document mistakenly OCR'd as Hindi, rewrite the entire text in its perfect, original native script.)
 - ai_confidence (number: A score from 0 to 100 based on how legible the document was and your confidence in the extracted data accuracy)
 
-CRITICAL LANGUAGE INSTRUCTION: Azure OCR sometimes misclassifies noisy Bengali script as Hindi (Devanagari). If you see Hindi characters that phonetically sound like Bengali names or locations, you MUST recognize this as a Bengali document, translate the fields to English for the JSON keys, but use perfect Bengali script for the `reconstructed_native_text` field.
+CRITICAL LANGUAGE INSTRUCTION: Azure OCR frequently misclassifies noisy regional Indian scripts (like Bengali, Gujarati, or Marathi) as Hindi (Devanagari). If you see Hindi characters that phonetically sound like regional names or locations, you MUST recognize the true native language of the document. Translate the extracted JSON fields to English, but output the `reconstructed_native_text` in the pure, original regional script.
 
 If a field is completely missing or illegible, return null. Return ONLY a valid JSON object.
 """
