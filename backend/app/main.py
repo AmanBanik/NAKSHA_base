@@ -511,12 +511,12 @@ def generate_legacy_renewal_pdf(record_id: int, db: Session = Depends(get_db)):
             else: res.append(w[0] + '*' * (len(w)-2) + w[-1])
         return ' '.join(res)
         
-    payload = f"VERIFIED DIGITAL TITLE
+    payload = f"""VERIFIED DIGITAL TITLE
 ID: IND-LR-{record.id}
 Reg: {record.registration_number}
 Owner: {mask_string(owner)}
 Area: {record.acres} Acres
-Hash: {record.document_hash}"
+Hash: {record.document_hash}"""
     qr.add_data(payload)
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
