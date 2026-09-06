@@ -277,6 +277,10 @@ class VerificationApprovalRequest(BaseModel):
     registration_number: str
     acres: float
     primary_parties: list
+    price_amount: typing.Optional[float] = None
+    land_rate: typing.Optional[float] = None
+    estimated_current_value: typing.Optional[float] = None
+    boundaries: typing.Optional[list] = None
     geo_polygon: typing.Optional[dict] = None  # GeoJSON dict
     # We can accept the full corrected form data here
 
@@ -308,12 +312,20 @@ async def approve_record(record_id: int, update_data: VerificationApprovalReques
     old_party = record.primary_parties[0] if record.primary_parties and len(record.primary_parties) > 0 else ""
     new_party = update_data.primary_parties[0] if update_data.primary_parties and len(update_data.primary_parties) > 0 else ""
     log_feedback("primary_parties", old_party, new_party)
+    log_feedback("price_amount", record.price_amount, update_data.price_amount)
+    log_feedback("land_rate", record.land_rate, update_data.land_rate)
+    log_feedback("estimated_current_value", record.estimated_current_value, update_data.estimated_current_value)
+    log_feedback("boundaries", str(record.boundaries), str(update_data.boundaries))
     # ----------------------------
 
     # Apply human corrections
     record.registration_number = update_data.registration_number
     record.acres = update_data.acres
     record.primary_parties = update_data.primary_parties
+    record.price_amount = update_data.price_amount
+    record.land_rate = update_data.land_rate
+    record.estimated_current_value = update_data.estimated_current_value
+    record.boundaries = update_data.boundaries
     
     if update_data.geo_polygon:
         # Save custom drawn/pasted coordinates back into PostGIS using GeoJSON format

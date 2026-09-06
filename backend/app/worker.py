@@ -63,11 +63,13 @@ Required JSON Schema fields:
 - registration_number (string)
 - transfer_date (string)
 - acres (number)
-- price_amount (number)
+- price_amount (number: the total price listed)
+- land_rate (number: the rate per acre/hectare listed)
+- estimated_current_value (number: you MUST calculate/estimate the current day value of this land based on the historical price, historical date, average Indian real estate inflation, and your GPT intelligence)
 - currency (string)
 - historical_date_note (string)
 - primary_parties (list of strings)
-- boundaries (list of strings)
+- boundaries (list of strings: e.g. ["North: River", "South: Road"])
 - additional_parameters (object)
 - ai_confidence (number: A score from 0 to 100 based on how legible the document was and your confidence in the extracted data accuracy)
 
@@ -125,6 +127,8 @@ def process_document_task(b64_file: str, content_type: str):
                 transfer_date=structured_data.get("transfer_date"),
                 acres=structured_data.get("acres"),
                 price_amount=structured_data.get("price_amount"),
+                land_rate=structured_data.get("land_rate"),
+                estimated_current_value=structured_data.get("estimated_current_value"),
                 currency=structured_data.get("currency"),
                 historical_date_note=structured_data.get("historical_date_note"),
                 primary_parties=structured_data.get("primary_parties"),

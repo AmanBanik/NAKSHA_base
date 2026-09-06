@@ -23,7 +23,18 @@ export default function DigitalPropertyCard({ params }: { params: { hash: string
     if (loading) return <div className="flex-1 flex items-center justify-center h-screen"><Loader2 className="animate-spin text-emerald-600" size={40} /></div>;
     if (!record) return <div className="flex-1 flex items-center justify-center h-screen text-red-500 font-bold">Invalid Document Hash. Record not found.</div>;
 
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://naksha-6bytes.koreacentral.cloudapp.azure.com:3000/certificate/${params.hash}`;
+    // Privacy Masking Algorithm for Offline QR
+    const maskString = (str: string) => {
+        if (!str) return 'N/A';
+        return str.split(' ').map(word => {
+            if (word.length <= 2) return word;
+            return word[0] + '*'.repeat(word.length - 2) + word[word.length - 1];
+        }).join(' ');
+    };
+
+    const offlinePayload = `VERIFIED DIGITAL TITLE\n----------------------\nID: IND-LR-${record.id}\nReg No: ${record.registration_number || 'N/A'}\nOwner: ${maskString(record.primary_parties?.[0])}\nArea: ${record.acres} Acres\nHash: ${record.document_hash}\nGovt. of India Auth`;
+    
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(offlinePayload)}`;
 
     return (
         <div className="min-h-screen bg-slate-100 p-8 flex justify-center items-start print:bg-white print:p-0">
@@ -78,9 +89,21 @@ export default function DigitalPropertyCard({ params }: { params: { hash: string
                                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Area</p>
                                 <p className="text-lg font-bold text-slate-800">{record.acres} <span className="text-sm font-normal text-slate-500">Acres</span></p>
                             </div>
+                            {record.boundaries && record.boundaries.length > 0 && (
+                            <div>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={14}/> Boundaries</p>
+                                <p className="text-sm font-medium text-slate-700">{record.boundaries.join(', ')}</p>
+                            </div>
+                            )}
                         </div>
                         
                         <div className="space-y-6">
+                            {record.estimated_current_value && (
+                            <div className="bg-teal-50 border border-teal-100 p-3 rounded-xl">
+                                <p className="text-xs font-bold text-teal-600 uppercase tracking-widest mb-1">AI Assessed Current Value</p>
+                                <p className="text-xl font-bold text-teal-900">₹ {record.estimated_current_value.toLocaleString('en-IN')}</p>
+                            </div>
+                            )}
                             <div>
                                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={14}/> GIS Status</p>
                                 {record.geo_polygon ? (

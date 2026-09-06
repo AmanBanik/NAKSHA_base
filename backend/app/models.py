@@ -24,6 +24,8 @@ class LandRecord(Base):
     transfer_date = Column(String, nullable=True)
     acres = Column(Float, nullable=True)
     price_amount = Column(Float, nullable=True)
+    land_rate = Column(Float, nullable=True)  # Legacy land rate from document
+    estimated_current_value = Column(Float, nullable=True) # AI calculated current day value
     currency = Column(String, nullable=True)
     historical_date_note = Column(Text, nullable=True)
     

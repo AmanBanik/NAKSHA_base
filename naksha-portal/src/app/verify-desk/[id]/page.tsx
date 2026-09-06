@@ -17,7 +17,11 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
     // Form states
     const [regNumber, setRegNumber] = useState('');
     const [acres, setAcres] = useState<number>(0);
-    const [primaryParty, setPrimaryParty] = useState('');
+        const [primaryParty, setPrimaryParty] = useState('');
+    const [price, setPrice] = useState<number>(0);
+    const [landRate, setLandRate] = useState<number>(0);
+    const [currentValue, setCurrentValue] = useState<number>(0);
+    const [boundaries, setBoundaries] = useState('');
     
     // GIS Form States
     const [customPolygon, setCustomPolygon] = useState<any>(null);
@@ -31,7 +35,11 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                 setRecord(res.data);
                 setRegNumber(res.data.registration_number || '');
                 setAcres(res.data.acres || 0);
-                setPrimaryParty(res.data.primary_parties?.[0] || '');
+                                setPrimaryParty(res.data.primary_parties?.[0] || '');
+                setPrice(res.data.price_amount || 0);
+                setLandRate(res.data.land_rate || 0);
+                setCurrentValue(res.data.estimated_current_value || 0);
+                setBoundaries(res.data.boundaries ? res.data.boundaries.join(', ') : '');
                 setCustomPolygon(res.data.geo_polygon);
                 setLoading(false);
             })
@@ -67,7 +75,11 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
             const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}`}/api/records/${params.id}/approve`, {
                 registration_number: regNumber,
                 acres: acres,
-                primary_parties: [primaryParty],
+                                primary_parties: [primaryParty],
+                price_amount: price,
+                land_rate: landRate,
+                estimated_current_value: currentValue,
+                boundaries: boundaries.split(',').map(s => s.trim()),
                 geo_polygon: customPolygon
             });
             setSuccessHash(res.data.hash);
@@ -164,7 +176,7 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                             />
                         </div>
 
-                        {/* Form Field */}
+                                                {/* Form Field */}
                         <div>
                             <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Total Area (Acres)</label>
                             <input 
@@ -175,6 +187,23 @@ export default function VerifyDesk({ params }: { params: { id: string } }) {
                                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 font-mono text-slate-800"
                             />
                         </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Historical Price (₹)</label>
+                                <input type="number" value={price} onChange={(e) => setPrice(parseFloat(e.target.value) || 0)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-mono" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Current Day Value (₹) 🤖</label>
+                                <input type="number" value={currentValue} onChange={(e) => setCurrentValue(parseFloat(e.target.value) || 0)} className="w-full px-4 py-3 bg-teal-50 border border-teal-200 rounded-xl focus:outline-none font-mono text-teal-800" />
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Boundaries (Comma separated)</label>
+                            <input type="text" value={boundaries} onChange={(e) => setBoundaries(e.target.value)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none" />
+                        </div>
+
 
                         <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl mt-8">
                             <h4 className="text-sm font-bold text-blue-900 mb-1">Human-in-the-Loop Process</h4>
