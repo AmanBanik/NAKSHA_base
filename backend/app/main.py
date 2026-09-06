@@ -436,20 +436,24 @@ def generate_legacy_renewal_pdf(record_id: int, db: Session = Depends(get_db)):
     # 2. Header
     c.setFillColor(HexColor("#064e3b"))
     c.setFont("Helvetica-Bold", 24)
-    c.drawCentredString(width / 2.0, height - 80, "GOVERNMENT OF N.A.K.S.H.A.")
+    c.drawCentredString(width / 2.0, height - 80, "GOVERNMENT OF INDIA")
+    
+    c.setFont("Helvetica-Bold", 12)
+    c.setFillColor(HexColor("#374151"))
+    c.drawCentredString(width / 2.0, height - 100, "MINISTRY OF HOUSING AND URBAN AFFAIRS")
     
     c.setFont("Helvetica-Bold", 14)
     c.setFillColor(HexColor("#0f766e"))
-    c.drawCentredString(width / 2.0, height - 105, "RENEWED DIGITAL PROPERTY CARD")
+    c.drawCentredString(width / 2.0, height - 125, "RENEWED DIGITAL PROPERTY CARD")
     
     c.setStrokeColor(HexColor("#d1d5db"))
-    c.line(100, height - 120, width - 100, height - 120)
+    c.line(100, height - 140, width - 100, height - 140)
     
     # 3. Main Content
     c.setFillColor(HexColor("#1f2937"))
     c.setFont("Helvetica", 11)
     
-    start_y = height - 180
+    start_y = height - 200
     line_spacing = 25
     
     c.drawString(70, start_y, "UNIQUE IDENTIFIER:")
