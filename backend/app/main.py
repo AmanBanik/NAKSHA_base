@@ -373,3 +373,17 @@ async def check_azure_health():
         return {"status": "offline", "latency_ms": 0, "message": "Connection Timeout"}
     except Exception:
         return {"status": "offline", "latency_ms": 0, "message": "Cloud Unreachable"}
+
+
+from sqlalchemy import text
+@app.get("/api/dev/migrate")
+def force_database_migration(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("ALTER TABLE land_records ADD COLUMN IF NOT EXISTS land_rate FLOAT;"))
+        db.execute(text("ALTER TABLE land_records ADD COLUMN IF NOT EXISTS estimated_current_value FLOAT;"))
+        models.Base.metadata.create_all(bind=engine)
+        db.commit()
+        return {"status": "success"}
+    except Exception as e:
+        db.rollback()
+        return {"status": "error", "message": str(e)}
