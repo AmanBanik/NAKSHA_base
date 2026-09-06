@@ -59,7 +59,7 @@ aoai_client = AzureOpenAI(azure_endpoint=aoai_endpoint, api_key=aoai_key, api_ve
 SYSTEM_PROMPT = """
 You are an expert data extraction assistant specializing in historical land records and property transfers.
 Your task is to take messy, error-prone raw OCR text from a historical land record and extract the key entities into a clean JSON object.
-Required JSON Schema fields:
+Required JSON Schema fields (TRANSLATE ALL VALUES TO ENGLISH):
 - registration_number (string)
 - transfer_date (string)
 - acres (number)
@@ -93,8 +93,8 @@ def process_document_task(b64_file: str, content_type: str):
         else:
             optimized_bytes = file_bytes
 
-        # Step 1: Azure Document Intelligence
-        poller = doc_client.begin_analyze_document("prebuilt-read", body=optimized_bytes, content_type=content_type)
+        # Step 1: Azure Document Intelligence (With Bengali Language Hint)
+        poller = doc_client.begin_analyze_document("prebuilt-read", body=optimized_bytes, content_type=content_type, locale="bn-IN")
         raw_text = poller.result().content
 
         # Step 2: Azure OpenAI GPT-4o
