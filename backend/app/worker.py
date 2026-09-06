@@ -94,7 +94,7 @@ def process_document_task(b64_file: str, content_type: str):
             optimized_bytes = file_bytes
 
         # Step 1: Azure Document Intelligence (With Bengali Language Hint)
-        poller = doc_client.begin_analyze_document("prebuilt-read", body=optimized_bytes, content_type=content_type, locale="bn-IN")
+        poller = doc_client.begin_analyze_document("prebuilt-read", body=optimized_bytes, content_type=content_type)
         raw_text = poller.result().content
 
         # Step 2: Azure OpenAI GPT-4o
