@@ -9,9 +9,9 @@ export default function AnalyticsPage() {
 
     useEffect(() => {
         // Dynamically grab the current Azure VM IP so we don't have to hardcode it!
-        // We look for the dashboard UID 'naksha_main'. We will set this UID when we create it in Grafana.
+        // We look for the dashboard UID we just generated in Grafana.
         const currentHost = window.location.hostname;
-        setGrafanaUrl(`http://${currentHost}:3001/d/naksha_main/national-analytics?orgId=1&kiosk=tv`);
+        setGrafanaUrl(`http://${currentHost}:3001/d/f2b0db4b-f397-4144-83cb-ba98dbacfb00/national-analytics?orgId=1&kiosk=tv`);
     }, []);
 
     return (
