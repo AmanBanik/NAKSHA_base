@@ -29,10 +29,11 @@
     <nav>
         <a href="#pitch">The Pitch</a>
         <a href="#architecture">Macro Architecture</a>
-        <a href="#ai-pipeline">AI & HITL Pipeline</a>
-        <a href="#security">Zero-Trust Auth</a>
-        <a href="#copilot">Copilot Deep Dive</a>
-        <a href="#hurdles">Hurdles & Fixes</a>
+        <a href="#ai-pipeline">AI Reconstruction Engine</a>
+        <a href="#security">Cryptographic Security</a>
+        <a href="#delivery">Citizenship Output</a>
+        <a href="#telemetry">Ministry Telemetry</a>
+        <a href="#copilot">RAG Copilot</a>
         <a href="#directions">Presenter Guide</a>
     </nav>
 
@@ -40,197 +41,137 @@
         
         <!-- Pitch -->
         <section id="pitch">
-            <h2>📖 1. The Story (The Pitch)</h2>
-            <p><strong>The Problem:</strong> Government land records (Bhu-Naksha, Khatians) are overwhelmingly trapped in fragile, decaying physical archives or unsearchable legacy scans. This causes massive bureaucratic delays, facilitates land fraud, and creates a nightmare for magistrates and citizens trying to verify authentic ownership.</p>
-            <p><strong>Our Solution:</strong> We built a highly secure, AI-powered digitization engine. N.A.K.S.H.A. doesn't just store documents; it uses Advanced AI to instantly extract metadata from legacy TIFF/JPG scans. It leverages cryptographic hashing to prevent tampering, features a Human-in-the-Loop (HITL) fallback for low-confidence scans, and provides a unified Dashboard for Magistrates alongside a public validation portal for citizens.</p>
+            <h2>🌍 1. The Story (The Pitch)</h2>
+            <p><strong>The Problem:</strong> Government land records (Bhu-Naksha, Khatians) are overwhelmingly trapped in fragile, decaying physical archives or unsearchable legacy scans. This causes massive bureaucratic delays, facilitates land fraud, and creates a nightmare for magistrates and citizens trying to verify authentic ownership. Furthermore, standard OCR models frequently hallucinate and confuse historical regional scripts (like Bengali) with Hindi, corrupting national databases.</p>
+            <p><strong>Our Solution:</strong> We built an Enterprise-Grade, highly secure AI digitization engine. N.A.K.S.H.A. doesn't just store documents; it uses an Advanced AI Pipeline to fix OCR hallucinations via <em>Phonetic Native Script Reconstruction</em>. It leverages SHA-256 cryptographic hashing to prevent tampering, features a Human-in-the-Loop (HITL) fallback for low-confidence scans, automatically maps property boundaries via PostGIS, and dispatches real-time Government Email Notifications directly to citizens upon approval.</p>
         </section>
 
         <!-- Macro Architecture -->
         <section id="architecture">
-            <h2>🛠️ 2. Macro Architecture & Tech Stack</h2>
-            <p>N.A.K.S.H.A. is engineered using a modern microservices architecture, fully containerized using Docker for enterprise-grade reliability and isolated scaling.</p>
+            <h2>🏗️ 2. Macro Architecture & Tech Stack</h2>
+            <p>Our system is a fully containerized, event-driven microservices architecture hosted on an Azure VM. It is highly scalable and deeply integrated.</p>
             
-            <div class="stack-container">
-                <span class="badge bg-nextjs">Next.js 14</span>
-                <span class="badge bg-fastapi">FastAPI (Python)</span>
-                <span class="badge bg-celery">Celery</span>
-                <span class="badge bg-redis">Redis</span>
-                <span class="badge bg-postgres">PostgreSQL</span>
-                <span class="badge bg-azure">Microsoft Azure VMs</span>
-                <span class="badge bg-docker">Docker Compose</span>
-                <span class="badge bg-ai">Azure GPT-4o & Document Intelligence</span>
+            <div class="mermaid">
+            graph TD
+                A[Next.js Frontend / Portal] -->|API Requests| B[FastAPI Gateway]
+                B -->|Message Broker| C[Redis Queue]
+                C -->|Async Tasks| D[Celery Worker Node]
+                
+                D <-->|Image/PDF Scan| E[OpenCV Pre-Processing]
+                D <-->|Visual Extraction| F[Azure Doc Intelligence prebuilt-layout]
+                D <-->|Phonetic Translation| G[Azure OpenAI GPT-4o]
+                
+                D -->|Save Structured Data| H[(PostgreSQL + PostGIS DB)]
+                B <-->|Read Data| H
+                
+                B -->|Background Task| M[Automated Gmail SMTP Dispatcher]
+                
+                J[Grafana Control Center] <-->|Telemetry Query| H
+                J -->|Anonymous iFrame Embed| A
             </div>
 
-            <div class="mermaid-container">
-                <div class="mermaid">
-                    graph TD
-                        User["User / Magistrate"] -->|HTTPS| Frontend["Next.js UI<br/>(Azure VM)"]
-                        Frontend -->|REST API| API["FastAPI Backend<br/>(Container)"]
-                        API -->|Task Queue| Redis["Redis Broker<br/>(Container)"]
-                        Redis --> Worker["Celery Worker<br/>(Container)"]
-                        Worker <-->|"1. Send Image<br/>2. Extracted JSON"| AzureDoc["Azure Document<br/>Intelligence"]
-                        Worker <-->|"1. Prompt<br/>2. Structured Data"| AzureOpenAI["Azure OpenAI<br/>GPT-4o"]
-                        Worker -->|"Confidence < 90%"| HITL["Human-In-The-Loop<br/>(Pending Review)"]
-                        Worker -->|"Confidence >= 90%"| Auto["Auto-Verified<br/>Record"]
-                        HITL --> DB[("PostgreSQL<br/>(Volume Attached)")]
-                        Auto --> DB
-                        API -->|Read/Write| DB
-                </div>
-            </div>
-
-            <div class="trainer-note">
-                <h4>🎙️ Trainer's Note: The "Why"</h4>
-                <p>When presenting the architecture, emphasize <strong>Asynchronous Decoupling</strong>. By placing Redis and Celery between the FastAPI backend and Azure AI, we guarantee the Magistrate's frontend UI never freezes, even if they upload a 500-page TIFF file. The API returns a 200 OK instantly, and Celery does the heavy lifting in the background.</p>
-            </div>
-        </section>
-
-        <!-- Deep Dive: AI Pipeline & HITL -->
-        <section id="ai-pipeline">
-            <h2>🧠 3. Deep Dive: AI Pipeline & Human-in-the-Loop (HITL)</h2>
-            <p>One of the most critical features of N.A.K.S.H.A. is our rigorous data validation pipeline. AI is powerful, but government records require absolute precision. We implemented a 90% baseline confidence threshold.</p>
-
-            <div class="deep-dive">
-                <h3>The Ingestion Sequence</h3>
-                <div class="mermaid-container">
-                    <div class="mermaid">
-                        sequenceDiagram
-                            actor Officer
-                            participant API as FastAPI
-                            participant Celery as Celery Worker
-                            participant Azure as Azure Document Intelligence
-                            participant DB as PostgreSQL
-                            
-                            Officer->>API: Uploads Legacy Scan (TIFF/PDF)
-                            API->>Celery: Offload Base64 Image to Queue
-                            API-->>Officer: Returns 200 OK (Task ID)
-                            Celery->>Azure: Send Image for OCR Extraction
-                            Azure-->>Celery: Returns JSON (Fields & Confidence Scores)
-                            
-                            alt Confidence >= 90%
-                                Celery->>DB: Save Status: VERIFIED
-                            else Confidence < 90%
-                                Celery->>DB: Save Status: PENDING_HUMAN_REVIEW
-                                DB-->>Officer: Trigger Dashboard Alert
-                            end
-                            Officer->>DB: Manually Override/Approve (HITL)
-                    </div>
-                </div>
-                <p><strong>How it works:</strong> If Azure Document Intelligence extracts a Khatian number but flags it with 88% confidence due to a smudged ink stain on the physical document, the system refuses to auto-verify it. Instead, it is routed to the <em>Magistrate Dashboard</em> under "Pending Verification" for a human officer to review (Human-In-The-Loop).</p>
-            </div>
-        </section>
-
-        <!-- Deep Dive: Security -->
-        <section id="security">
-            <h2>🔐 4. Deep Dive: Zero-Trust Authentication</h2>
-            <p>To prevent unauthorized terminal access, N.A.K.S.H.A. utilizes a strict Zero-Trust session model.</p>
-            
-            <div class="mermaid-container">
-                <div class="mermaid">
-                    graph LR
-                        Login[User Logs In] --> JWT[FastAPI Issues JWT Token]
-                        JWT --> Storage[Stored in sessionStorage]
-                        Storage --> Tab[User Closes Tab/Browser]
-                        Tab --> Shred[Session Cryptographically Shredded]
-                        Shred --> Auth[User Must Re-Authenticate]
-                </div>
-            </div>
-
-            <div class="trainer-note">
-                <h4>🎙️ Trainer's Note: LocalStorage vs SessionStorage</h4>
-                <p>If judges ask about security, point out that most apps use <code>localStorage</code>, which keeps users logged in forever. In a government setting, if an officer forgets to log out of a shared computer, it's a massive vulnerability. By strictly using <code>sessionStorage</code> and a window unmount hook, the session is annihilated the millisecond the window is closed.</p>
-            </div>
-        </section>
-
-        <!-- Deep Dive: Copilot -->
-        <section id="copilot">
-            <h2>💬 5. Deep Dive: The Context-Aware AI Copilot</h2>
-            <p>Our Copilot is not just a generic ChatGPT wrapper. It is a highly specialized, context-injected site guide and database expert.</p>
-            
             <ul>
-                <li><strong>Anti-Hallucination Guardrails:</strong> When the Postgres database is empty, LLMs naturally try to guess or invent mock data. We engineered a dynamic context injector: if the DB returns 0 records, the system prompt hard-injects a directive strictly forcing the AI to refuse answering and state the DB is empty.</li>
-                <li><strong>Dynamic Site Navigator:</strong> The AI knows the exact routing structure of the Next.js application. It generates standard Markdown links (e.g. <code>[Go to Validator](/verify)</code>) which ReactMarkdown parses into functional React Router links, allowing the AI to literally teleport the user across the application.</li>
+                <li><strong>Frontend:</strong> Next.js 14, TailwindCSS, Lucide Icons, Leaflet.js (Cadastral Mapping).</li>
+                <li><strong>Backend:</strong> FastAPI, Python 3.11, SQLAlchemy, ReportLab (PDF Generation).</li>
+                <li><strong>Worker / AI:</strong> Celery, Redis, OpenCV, Azure Document Intelligence, GPT-4o.</li>
+                <li><strong>Database:</strong> PostgreSQL with PostGIS (for geospatial boundary data).</li>
+                <li><strong>Analytics:</strong> Grafana 10 (Embedded seamlessly into Next.js).</li>
+            </ul>
+        </section>
+
+        <!-- AI Pipeline -->
+        <section id="ai-pipeline">
+            <h2>🧠 3. AI Pipeline & Native Script Reconstruction</h2>
+            <p>When a decaying document is uploaded to the Bulk Digitizer, it doesn't just pass through simple OCR. It goes through a highly sophisticated multi-stage pipeline:</p>
+            
+            <ol>
+                <li><strong>OpenCV Pre-Processing:</strong> We bypass PDFs and apply Gaussian blur and thresholding to raw JPG/PNG scans to reduce 100-year-old paper noise.</li>
+                <li><strong>Azure Layout Engine:</strong> We utilize Azure's advanced <code>prebuilt-layout</code> model, which is superior at handling multi-column formats and detecting text regions without needing explicit locale hints.</li>
+                <li><strong>The Hallucination Fix (Our "Wow" Factor):</strong> Legacy OCR engines visually confuse the continuous top-line (Matra) of Bengali with Hindi (Devanagari). To fix this, we inject the raw OCR into GPT-4o with a highly tuned system prompt. GPT-4o recognizes the phonetic layout of regional names, standardizes the English extraction, and literally rewrites the entire text back into <strong>Perfect Native Regional Script</strong> (Bengali, Marathi, etc.) to display on the Magistrate's verification desk.</li>
+            </ol>
+        </section>
+
+        <!-- Security -->
+        <section id="security">
+            <h2>🔒 4. Cryptographic Security & Anti-Fraud</h2>
+            <p>Land fraud often happens when duplicate or forged deeds are uploaded. N.A.K.S.H.A. solves this fundamentally:</p>
+            <ul>
+                <li><strong>SHA-256 Hashing:</strong> When a Magistrate clicks "Approve", the system mathematically mints a unique cryptographic hash combining the Registration Number, Acres, and Raw Text.</li>
+                <li><strong>Database Deduplication:</strong> Our PostgreSQL schema enforces a <code>UNIQUE(document_hash)</code> constraint. If a malicious actor tries to upload a slightly altered copy of an existing document, the Celery worker immediately catches the <code>IntegrityError</code> and flags it as a <strong>Duplicate/Potential Forgery</strong>, blocking it from entering the database.</li>
+                <li><strong>Human-in-the-Loop (RLHF):</strong> If the AI is unsure (Confidence < 90%), it refuses to approve the document automatically. It flags it as <code>PENDING_HUMAN_REVIEW</code>. The Magistrate must manually correct the errors, and the system logs their corrections into an <code>AIFeedback</code> table to train future models.</li>
+            </ul>
+        </section>
+
+        <!-- Delivery -->
+        <section id="delivery">
+            <h2>📄 5. Citizen Delivery & Notification Engine</h2>
+            <p>Digitization is useless if the citizen cannot access it. We built a comprehensive output pipeline:</p>
+            <ul>
+                <li><strong>Live Gmail Dispatch:</strong> The moment a Magistrate hits "Approve", a FastAPI Background Task connects to Google's SMTP server and fires an official Government email directly to the citizen's phone containing their verification status and Cryptographic Hash.</li>
+                <li><strong>Next.js Public Portal:</strong> Citizens can scan their QR code to instantly verify their digital property card on a modern web view.</li>
+                <li><strong>Offline ReportLab PDFs:</strong> For older citizens or official paper trails, our Python backend dynamically generates a beautifully formatted, double-bordered Legacy Deed PDF featuring official "GOVERNMENT OF INDIA" headers and a dynamically embedded QR code via the <code>qrcode</code> library.</li>
+            </ul>
+        </section>
+        
+        <!-- Telemetry -->
+        <section id="telemetry">
+            <h2>📊 6. Ministry Telemetry (Grafana)</h2>
+            <p>We implemented a massive macro-level dashboard specifically for National Directors and Cabinet Ministers. Powered by Grafana and deeply integrated into our PostGIS database, this dashboard runs on port 3001 but is seamlessly embedded into the Next.js frontend via a secure, anonymous iFrame.</p>
+            <p>It instantly tracks <strong>Total Wealth Unlocked</strong> (inflating 100-year-old property prices to modern valuations via GPT-4 algorithms), <strong>Digitization by State</strong>, and the <strong>Human Workload Queue</strong>.</p>
+        </section>
+
+        <!-- Copilot -->
+        <section id="copilot">
+            <h2>🤖 7. Secure RAG Copilot</h2>
+            <p>Our Chatbot is not a standard ChatGPT window. It is a highly constrained Retrieval-Augmented Generation (RAG) agent.</p>
+            <ul>
+                <li>It secretly queries the live PostgreSQL database for the latest records and bundles them into JSON.</li>
+                <li>It is explicitly prompted <strong>NEVER to hallucinate</strong> outside of the provided JSON context.</li>
+                <li>It acts as an interactive site-guide, routing users to the Bulk Digitizer or Public Validator securely.</li>
             </ul>
         </section>
 
         <!-- Hurdles -->
         <section id="hurdles">
-            <h2>🚧 6. Hurdles & Engineering Fixes</h2>
-            <p><em>(Interactive: Click a card to reveal the engineering fix)</em></p>
-            <div class="hurdle-grid">
-                
-                <div class="hurdle-card">
-                    <div class="hurdle-title">🛑 The Next.js Cloud Network Disconnect</div>
-                    <div class="hurdle-content">
-                        <p><strong>The Hurdle:</strong> Next.js static builds run in the client's browser, meaning it couldn't resolve our backend Docker container networking (`localhost`), causing logins to silently drop.</p>
-                        <div class="hurdle-fix">
-                            <strong>The Fix:</strong> We dynamically injected our custom Azure DNS at build-time using Docker <code>args</code>, ensuring the browser securely routed API calls across the public internet to our Azure VM.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="hurdle-card">
-                    <div class="hurdle-title">🤖 AI Hallucination on Empty Databases</div>
-                    <div class="hurdle-content">
-                        <p><strong>The Hurdle:</strong> When the database was empty, the AI Copilot would attempt to "guess" record formats, inventing fake data.</p>
-                        <div class="hurdle-fix">
-                            <strong>The Fix:</strong> We engineered a dynamic context-injection system. If the database returns 0 records, the prompt hard-injects an "EMPTY STATE" directive, explicitly forcing the AI to state the lack of records.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="hurdle-card">
-                    <div class="hurdle-title">⏳ Celery Asynchronous Bottlenecking</div>
-                    <div class="hurdle-content">
-                        <p><strong>The Hurdle:</strong> The Celery worker crashed due to missing asynchronous libraries (<code>gevent</code>) and a hardcoded localhost Redis URL, resulting in a 500 API Error.</p>
-                        <div class="hurdle-fix">
-                            <strong>The Fix:</strong> We mapped the Celery broker URL dynamically via environment variables to the Docker Redis container and integrated the <code>gevent</code> execution pool. This allowed true background threading.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="hurdle-card">
-                    <div class="hurdle-title">👻 Ghost Containers (Docker State Bug)</div>
-                    <div class="hurdle-content">
-                        <p><strong>The Hurdle:</strong> Ubuntu's legacy Python-based <code>docker-compose</code> crashed repeatedly (<code>KeyError: ContainerConfig</code>) when updating containers with new images.</p>
-                        <div class="hurdle-fix">
-                            <strong>The Fix:</strong> We automated a clean-slate deployment pipeline (<code>docker rm -f</code>) that wipes container shells but preserves the permanent <code>postgres_data</code> volume. Guaranteed zero data loss with continuous integration.
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            <h2>🚧 8. Build Hurdles & Technical Fixes</h2>
+            <p>Building an Enterprise architecture in a Hackathon environment introduced several critical hurdles that we systematically solved:</p>
+            <ul>
+                <li><strong>Azure API Restrictions:</strong> The Azure Document Intelligence tier restricted explicit locale hints (like <code>bn-IN</code>), forcing the model to aggressively hallucinate Bengali text as Hindi. <strong>Fix:</strong> We engineered a multi-modal fallback where GPT-4o acts as a phonetic post-processor, recognizing the hallucinations and mathematically rewriting the text back to pure Bengali.</li>
+                <li><strong>Docker Storage Exhaustion:</strong> Heavy Next.js build caching quickly exhausted the Azure VM's disk space, causing catastrophic <code>no space left on device</code> errors. <strong>Fix:</strong> Implemented strict <code>docker builder prune</code> protocols to wipe dangling SWC layers while surgically preserving the Grafana volumes so we wouldn't lose telemetry data.</li>
+                <li><strong>Postgres Schema Drifting:</strong> Adding the new <code>owner_email</code> field for notifications caused immediate 500 Internal Server API crashes because SQLAlchemy does not auto-alter existing tables. <strong>Fix:</strong> Bypassed ORM constraints and executed raw PostgreSQL <code>ALTER TABLE</code> queries directly inside the database container.</li>
+                <li><strong>Grafana iFrame Clickjacking Protection:</strong> Grafana's strict security protocols blocked Next.js from embedding the charts natively. <strong>Fix:</strong> Overrode Grafana's initialization variables (<code>GF_SECURITY_ALLOW_EMBEDDING=true</code>) and mapped an Anonymous Viewer role to allow seamless UI integration without compromising the admin login on port 3001.</li>
+                <li><strong>Cryptographic DB Deadlocks:</strong> Uploading the same PDF twice caused a cryptographic <code>IntegrityError</code> which crashed the entire Celery Worker node. <strong>Fix:</strong> Wrapped the worker transaction in a graceful <code>db.rollback()</code> block, allowing the system to instantly flag it as a forgery without dropping the queue.</li>
+            </ul>
         </section>
 
-        <!-- Directions -->
+        <!-- Presenter Guide -->
         <section id="directions">
-            <h2>🎙️ 7. Directions for the Presentation Team</h2>
+            <h2>🎤 9. Hackathon Presenter Guide</h2>
+            <p>When the judges walk up to your table, follow this exact flow to guarantee maximum impact:</p>
             
-            <div class="direction-box">
-                <h3 style="margin-top: 0; color: var(--secondary);">For Presenters (Pitchers)</h3>
-                <ul style="margin-left: 1.5rem; color: var(--text-light);">
-                    <li><strong>The Hook:</strong> Start with the physical reality of decaying records. Move into the UI immediately. Don't spend too much time on slides.</li>
-                    <li><strong>Demo Flow:</strong> Log in using the Sikkim credentials (<code>pooja11111981</code>). Show the empty dashboard. Upload a document in <em>Bulk Digitization</em> to trigger the Celery background worker. Finally, interact with the Copilot to show it querying the newly processed data and navigating the site.</li>
-                    <li><strong>Hit The Key Phrases:</strong> Drop the words <em>"Zero-Trust Session Storage"</em>, <em>"Human-In-The-Loop Validation"</em>, and <em>"Asynchronous Celery Architecture"</em>. Judges love production-ready terminology.</li>
-                    <li><strong>Handle Errors Gracefully:</strong> If something loads slowly, smoothly transition by explaining, <em>"Since we are utilizing Azure's Burstable B-series VMs for extreme cost efficiency, the background worker takes a second to accumulate burst credits."</em></li>
-                </ul>
+            <div class="tip-box">
+                <strong>Step 1: The OCR Hallucination (Bulk Digitizer)</strong><br>
+                Upload `3.pdf` (The Bengali document). Let it process. Show the judges the Verification Desk. Point out the left panel (Azure's raw Hindi OCR) vs the right panel (GPT-4's perfect English translation). Say: <em>"Standard OCR corrupts national databases by confusing Bengali and Hindi. Our AI caught the error, extracted the exact value, and reconstructed the native script."</em>
+            </div>
+            
+            <div class="tip-box">
+                <strong>Step 2: The Cadastral Map & Email Dispatch</strong><br>
+                While on the Verification Desk, scroll down to the Leaflet map and draw a polygon. Type your own personal email address into the new "Citizen Contact Email" box. Click the green "Approve & Mint Hash" button. Show the judges your phone as the real-time Government Email arrives with the Cryptographic hash.
             </div>
 
-            <div class="direction-box tech">
-                <h3 style="margin-top: 0; color: #6366f1;">For Tech Leads</h3>
-                <ul style="margin-left: 1.5rem; color: var(--text-light);">
-                    <li><strong>Deployment Command:</strong> If you need to refresh the codebase on Azure, strictly run: <code>git pull origin main && sudo docker rm -f $(sudo docker ps -aq) && sudo docker-compose up --build -d</code>. This prevents the ContainerConfig bug while perfectly preserving database data.</li>
-                    <li><strong>Database Seeding:</strong> To reseed or generate new credentials, run: <code>sudo docker exec -it sih_api bash -c "cd /app && PYTHONPATH=/app python scripts/seed_users.py"</code> and use <code>docker cp</code> to extract <code>credentials.md</code>.</li>
-                    <li><strong>Cost Ops:</strong> Ensure the VM is shut down via the Azure Portal after presentation rehearsals. The DNS routing automatically resolves even if the Public IP changes on boot.</li>
-                </ul>
+            <div class="tip-box">
+                <strong>Step 3: The Cryptographic PDF (Public Validator)</strong><br>
+                Copy the hash from the email (or dashboard). Go to the Public Validator. Paste the hash to prove it is authentic. Click "Download Legacy PDF" and show them the dynamically generated ReportLab PDF with the QR code.
             </div>
+            
+            <div class="tip-box">
+                <strong>Step 4: Ministry Analytics & Copilot</strong><br>
+                Click on the "Ministry Analytics" button on the main dashboard to reveal the live Grafana charts. Say: <em>"This gives the Ministry real-time macro-level visibility into total wealth digitized."</em> Finally, open the Copilot and ask it: <strong>"Who owns the largest plot of land?"</strong> to prove it reads the live database securely without hallucinating.
+            </div>
+
+            <p style="text-align: center; margin-top: 40px; font-weight: bold; color: var(--primary);">Go out there and win. 🏆</p>
         </section>
-
+        
     </div>
-
-    <footer>
-        <p style="text-align: center; color: var(--text-light); text-decoration-thickness: 10px;">CuratedWithCompute for Team 6Bytes</p>
-    </footer>
-
-    <script src="script.js"></script>
 </body>
 </html>
