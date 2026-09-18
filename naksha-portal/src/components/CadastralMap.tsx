@@ -43,6 +43,20 @@ function ResizeHandler({ isFullscreen }: { isFullscreen?: boolean }) {
     return null;
 }
 
+// Automatically fly to the bounds of the drawn polygon as points are added
+function AutoZoomHandler({ points }: { points: [number, number][] }) {
+    const map = useMap();
+    useEffect(() => {
+        const validPoints = points.filter(p => Array.isArray(p) && p.length >= 2 && p[0] != null && p[1] != null && !isNaN(p[0]) && !isNaN(p[1]));
+        if (validPoints.length > 0) {
+            const bounds = L.latLngBounds(validPoints);
+            // Don't zoom out too far if it's just one point, but fly smoothly
+            map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 18, duration: 0.8 });
+        }
+    }, [points, map]);
+    return null;
+}
+
 export default function CadastralMap({ geoJsonPolygon, center, isEditing, isFullscreen, onPolygonChange }: MapProps) {
     const [points, setPoints] = useState<[number, number][]>([]);
 
@@ -102,6 +116,7 @@ export default function CadastralMap({ geoJsonPolygon, center, isEditing, isFull
         <div style={{ height: isFullscreen ? '100%' : '400px', width: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', position: 'relative' }}>
             <MapContainer center={mapCenter as [number, number]} zoom={18} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
                 <ResizeHandler isFullscreen={isFullscreen} />
+                <AutoZoomHandler points={points} />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
