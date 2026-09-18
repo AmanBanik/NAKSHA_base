@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Merriweather, JetBrains_Mono } from "next/font/google";
-import Sidebar from "@/components/Sidebar";
-import CopilotChat from "@/components/CopilotChat";
+import ClientUIWrapper from "@/components/ClientUIWrapper";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
@@ -40,7 +39,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${merriweather.variable} ${jetbrains.variable} font-sans antialiased h-screen flex overflow-hidden bg-[#FAF7F2] text-[#1C1917]`}>
         
-        <Sidebar />
+        <ClientUIWrapper />
 
         {/* Dynamic Main Workspace */}
         <main className="flex-1 flex flex-col overflow-y-auto relative z-0">
@@ -48,8 +47,6 @@ export default function RootLayout({
             <div className="fixed top-0 left-0 w-full h-full bg-gradient-to-br from-[#bef264]/20 via-[#FEF3C7]/60 to-[#bae6fd]/40 -z-10 pointer-events-none"></div>
             {children}
         </main>
-
-        <CopilotChat />
       </body>
     </html>
   );
