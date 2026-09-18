@@ -88,28 +88,23 @@
             <div class="mermaid">
             graph LR
                 Doc[Legacy Deed] --> Router{AI Router Node}
-                Router -->|Primary| VLM[Local Qwen2-VL 7B]
-                Router -->|Failover / Timeout| Azure[Azure GPT-4o]
+                Router -->|Primary (Vision)| VLM[Local Qwen2-VL]
+                VLM -->|Transliteration| Bhashini[GoI Bhashini API]
+                Router -->|Failover (Vision+Text)| Azure[Azure GPT-4o]
                 
-                VLM --> PG[(PostgreSQL AIFeedback)]
+                Bhashini --> PG[(PostgreSQL AIFeedback)]
                 Azure --> PG
                 
-                PG -.->|Immediate| RAG[Dynamic pgvector RAG]
-                RAG -.-> Router
-                
+                PG -.->|Universal RAG Memory| Router
                 PG -->|Batch 1,000 Rows| LoRA[Scheduled LoRA Tuning]
                 LoRA --> VLM
             </div>
 
             <p><strong>The Mechanics:</strong></p>
             <ol>
-                <li><strong>Sovereign Execution:</strong> The AI Gateway defaults to a locally hosted Vision-Language Model (<strong>Qwen2-VL-7B</strong> in 8-bit quantization). It processes native Bengali/Hindi Ligatures seamlessly entirely within the VM. Azure OpenAI acts strictly as a load-balancing failover.</li>
-                <li><strong>Hybrid HITL Learning:</strong> Both models share the same PostgreSQL <code>AIFeedback</code> table. When a Magistrate corrects an OCR error in the split-screen UI:
-                    <ul>
-                        <li><em>Immediate (RAG):</em> The correction embeds into <code>pgvector</code>. The next inference dynamically injects this past mistake as "Few-Shot Context," fixing the AI instantly.</li>
-                        <li><em>Intrinsic (LoRA):</em> Every 1,000 rows, a Celery cron job trains a Low-Rank Adaptation (LoRA) on the local model, fundamentally and permanently teaching it the new dialect without catastrophic forgetting.</li>
-                    </ul>
-                </li>
+                <li><strong>The 2-Brained Sovereign Pipeline:</strong> The AI Gateway defaults to a locally hosted Vision-Language Model (<strong>Qwen2-VL-7B</strong> in 8-bit quantization) to extract raw pixels and layouts from faded deeds. This raw text is piped to the <strong>GoI Bhashini API</strong> for flawless Indic translation. Azure OpenAI acts strictly as a fallback for massive traffic spikes.</li>
+                <li><strong>The Universal RAG Memory:</strong> Since Azure and Bhashini are locked APIs, how do they learn from mistakes? When a Magistrate corrects an error, it embeds into <code>pgvector</code>. On the next run, the Router injects this past mistake as "Few-Shot RAG Context" to both Azure and Qwen. The database acts as a shared brain.</li>
+                <li><strong>The Azure Phase-Out (LoRA):</strong> Every 1,000 feedback rows, a Celery cron job trains a Low-Rank Adaptation (LoRA) on the Local Qwen2-VL model. Because the local model is constantly learning its visual base weights, it gets smarter every week. Eventually, the local pipeline surpasses Azure, allowing us to phase out expensive cloud APIs and achieve 100% AI Sovereignty.</li>
             </ol>
         </section>
 
