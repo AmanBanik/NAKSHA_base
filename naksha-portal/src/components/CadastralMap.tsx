@@ -86,19 +86,21 @@ export default function CadastralMap({ geoJsonPolygon, center, isEditing, isFull
         }
     };
 
+    const validPoints = points.filter(p => Array.isArray(p) && p.length >= 2 && p[0] != null && p[1] != null && !isNaN(p[0]) && !isNaN(p[1]));
+
     let mapCenter = center || [22.5726, 88.3639]; // Default to Kolkata if empty
-    if (!center && points.length > 0) {
-        const lats = points.map(c => c[0]);
-        const lngs = points.map(c => c[1]);
+    if (!center && validPoints.length > 0) {
+        const lats = validPoints.map(c => c[0]);
+        const lngs = validPoints.map(c => c[1]);
         mapCenter = [
             (Math.min(...lats) + Math.max(...lats)) / 2,
             (Math.min(...lngs) + Math.max(...lngs)) / 2,
-        ];
+        ] as [number, number];
     }
 
     return (
         <div style={{ height: isFullscreen ? '100%' : '400px', width: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', position: 'relative' }}>
-            <MapContainer center={mapCenter} zoom={18} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
+            <MapContainer center={mapCenter as [number, number]} zoom={18} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
                 <ResizeHandler isFullscreen={isFullscreen} />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -107,13 +109,13 @@ export default function CadastralMap({ geoJsonPolygon, center, isEditing, isFull
                 
                 {isEditing && <ClickHandler onMapClick={handleMapClick} />}
                 
-                {points.length > 0 && (
-                    <Polygon positions={points} pathOptions={{ color: isEditing ? '#f59e0b' : '#10b981', fillColor: isEditing ? '#f59e0b' : '#10b981', fillOpacity: 0.4 }}>
+                {validPoints.length > 0 && (
+                    <Polygon positions={validPoints} pathOptions={{ color: isEditing ? '#f59e0b' : '#10b981', fillColor: isEditing ? '#f59e0b' : '#10b981', fillOpacity: 0.4 }}>
                         {!isEditing && <Popup>Verified Land Boundary</Popup>}
                     </Polygon>
                 )}
                 
-                {isEditing && points.map((p, i) => (
+                {isEditing && validPoints.map((p, i) => (
                     <Marker key={i} position={p} />
                 ))}
             </MapContainer>
