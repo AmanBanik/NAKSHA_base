@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The N.A.K.S.H.A. Masterclass</title>
+    <title>N.A.K.S.H.A. | National Finale Blueprint</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
@@ -12,166 +12,215 @@
             startOnLoad: true, 
             theme: 'neutral',
             themeVariables: {
-                fontSize: '18px',
-                fontFamily: 'Inter'
+                fontSize: '16px',
+                fontFamily: 'Inter',
+                primaryColor: '#e0f2fe',
+                primaryBorderColor: '#0ea5e9'
             }
         });
     </script>
+    <style>
+        .mermaid { margin: 2rem 0; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); display: flex; justify-content: center; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 1rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .epic-title { color: #0f766e; border-bottom: 2px solid #0f766e; padding-bottom: 0.5rem; margin-top: 4rem; }
+        .code-block { background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 6px; font-family: monospace; font-size: 0.9rem; margin-top: 1rem; }
+    </style>
 </head>
 <body>
 
     <header>
-        <h1>N.A.K.S.H.A.</h1>
+        <h1>N.A.K.S.H.A. (Phase II)</h1>
         <p>Neural Archival Knowledge & Script Heuristic Analyzer</p>
-        <p style="font-size: 1rem; margin-top: 10px; color: #14b8a6;">Team 6Bytes: Official Pitch & Architecture Masterclass</p>
+        <p style="font-size: 1.1rem; margin-top: 10px; color: #14b8a6; font-weight: 600;">The Grand Finale Build: Enterprise Architecture & Scaling Blueprint</p>
     </header>
 
     <nav>
-        <a href="#pitch">The Pitch</a>
-        <a href="#architecture">Macro Architecture</a>
-        <a href="#ai-pipeline">AI Reconstruction Engine</a>
-        <a href="#security">Cryptographic Security</a>
-        <a href="#delivery">Citizenship Output</a>
-        <a href="#telemetry">Ministry Telemetry</a>
-        <a href="#copilot">RAG Copilot</a>
-        <a href="#directions">Presenter Guide</a>
+        <a href="#node-arch">1. 5-Node Fleet</a>
+        <a href="#ai-sovereignty">2. AI Swapping & LoRA</a>
+        <a href="#auth">3. Zero-Trust Auth</a>
+        <a href="#geospatial">4. PostGIS Overlaps</a>
+        <a href="#infrastructure">5. Infra & PubSub</a>
+        <a href="#crypto">6. Crypto Vault</a>
     </nav>
 
     <div class="container">
         
-        <!-- Pitch -->
-        <section id="pitch">
-            <h2>🌍 1. The Story (The Pitch)</h2>
-            <p><strong>The Problem:</strong> Government land records (Bhu-Naksha, Khatians) are overwhelmingly trapped in fragile, decaying physical archives or unsearchable legacy scans. This causes massive bureaucratic delays, facilitates land fraud, and creates a nightmare for magistrates and citizens trying to verify authentic ownership. Furthermore, standard OCR models frequently hallucinate and confuse historical regional scripts (like Bengali) with Hindi, corrupting national databases.</p>
-            <p><strong>Our Solution:</strong> We built an Enterprise-Grade, highly secure AI digitization engine. N.A.K.S.H.A. doesn't just store documents; it uses an Advanced AI Pipeline to fix OCR hallucinations via <em>Phonetic Native Script Reconstruction</em>. It leverages SHA-256 cryptographic hashing to prevent tampering, features a Human-in-the-Loop (HITL) fallback for low-confidence scans, automatically maps property boundaries via PostGIS, and dispatches real-time Government Email Notifications directly to citizens upon approval.</p>
-        </section>
-
-        <!-- Macro Architecture -->
-        <section id="architecture">
-            <h2>🏗️ 2. Macro Architecture & Tech Stack</h2>
-            <p>Our system is a fully containerized, event-driven microservices architecture hosted on an Azure VM. It is highly scalable and deeply integrated.</p>
+        <!-- Node Architecture -->
+        <section id="node-arch">
+            <h2 class="epic-title">🌍 1. The 5-Node Microservices Fleet</h2>
+            <p>To survive national-level traffic, N.A.K.S.H.A. abandons the monolithic structure. We employ a horizontally scalable, fully decoupled 5-Node architecture. This isolation means a catastrophic traffic spike in Public AI Inference cannot crash the Magistrate's critical systems.</p>
             
             <div class="mermaid">
             graph TD
-                A[Next.js Frontend / Portal] -->|API Requests| B[FastAPI Gateway]
-                B -->|Message Broker| C[Redis Queue]
-                C -->|Async Tasks| D[Celery Worker Node]
+                subgraph The Fleet
+                    N1[Node 1: Next.js Platform]
+                    N2[Node 2: PostgreSQL + Grafana]
+                    N3[Node 3: AI VLM Gateway]
+                    N4[Node 4: Celery + Redis Broker]
+                    N5[Node 5: Central Dev Command]
+                end
+
+                Client((Citizens / Officers)) -->|WebSockets/SSE| N1
+                N1 -->|Async Tasks| N4
+                N4 <-->|Inference Payload| N3
+                N3 <-->|Read/Write Vectors| N2
+                N1 <-->|Query| N2
                 
-                D <-->|Image/PDF Scan| E[OpenCV Pre-Processing]
-                D <-->|Visual Extraction| F[Azure Doc Intelligence prebuilt-layout]
-                D <-->|Phonetic Translation| G[Azure OpenAI GPT-4o]
-                
-                D -->|Save Structured Data| H[(PostgreSQL + PostGIS DB)]
-                B <-->|Read Data| H
-                
-                B -->|Background Task| M[Automated Gmail SMTP Dispatcher]
-                
-                J[Grafana Control Center] <-->|Telemetry Query| H
-                J -->|Anonymous iFrame Embed| A
+                N5 -.->|Live Telemetry| N1
+                N5 -.->|Queue Metrics| N4
+                N5 -.->|DB Health| N2
             </div>
 
             <ul>
-                <li><strong>Frontend:</strong> Next.js 14, TailwindCSS, Lucide Icons, Leaflet.js (Cadastral Mapping).</li>
-                <li><strong>Backend:</strong> FastAPI, Python 3.11, SQLAlchemy, ReportLab (PDF Generation).</li>
-                <li><strong>Worker / AI:</strong> Celery, Redis, OpenCV, Azure Document Intelligence, GPT-4o.</li>
-                <li><strong>Database:</strong> PostgreSQL with PostGIS (for geospatial boundary data).</li>
-                <li><strong>Analytics:</strong> Grafana 10 (Embedded seamlessly into Next.js).</li>
+                <li><strong>Node 1 (Platform):</strong> The unified Next.js 14 frontend. Server-Side Rendered (SSR) for SEO and Edge caching.</li>
+                <li><strong>Node 2 (State):</strong> PostgreSQL with PostGIS extensions and pgvector. Grafana runs independently on port 3001, providing live National Telemetry via secured anonymous iFrames.</li>
+                <li><strong>Node 3 (AI Gateway):</strong> The dedicated intelligence routing engine. Heavy GPU workloads live strictly here.</li>
+                <li><strong>Node 4 (Queue):</strong> Distributed Celery workers governed by a Redis broker, enabling asynchronous background execution for thousands of concurrent uploads.</li>
+                <li><strong>Node 5 (Command):</strong> A strictly isolated Dev/Admin environment showing live observability (online devs, container health, queue bottlenecks).</li>
             </ul>
         </section>
 
-        <!-- AI Pipeline -->
-        <section id="ai-pipeline">
-            <h2>🧠 3. AI Pipeline & Native Script Reconstruction</h2>
-            <p>When a decaying document is uploaded to the Bulk Digitizer, it doesn't just pass through simple OCR. It goes through a highly sophisticated multi-stage pipeline:</p>
+        <!-- AI Sovereignty -->
+        <section id="ai-sovereignty">
+            <h2 class="epic-title">🧠 2. Dynamic AI Swapping & The HITL Loop</h2>
+            <p>Relying solely on external APIs (Azure) is a national security risk. We implement <strong>Failover Redundancy</strong> and an automated <strong>Hybrid Continuous Learning Loop</strong>.</p>
             
+            <div class="mermaid">
+            graph LR
+                Doc[Legacy Deed] --> Router{AI Router Node}
+                Router -->|Primary| VLM[Local Qwen2-VL 7B]
+                Router -->|Failover / Timeout| Azure[Azure GPT-4o]
+                
+                VLM --> PG[(PostgreSQL AIFeedback)]
+                Azure --> PG
+                
+                PG -.->|Immediate| RAG[Dynamic pgvector RAG]
+                RAG -.-> Router
+                
+                PG -->|Batch 1,000 Rows| LoRA[Scheduled LoRA Tuning]
+                LoRA --> VLM
+            </div>
+
+            <p><strong>The Mechanics:</strong></p>
             <ol>
-                <li><strong>OpenCV Pre-Processing:</strong> We bypass PDFs and apply Gaussian blur and thresholding to raw JPG/PNG scans to reduce 100-year-old paper noise.</li>
-                <li><strong>Azure Layout Engine:</strong> We utilize Azure's advanced <code>prebuilt-layout</code> model, which is superior at handling multi-column formats and detecting text regions without needing explicit locale hints.</li>
-                <li><strong>The Hallucination Fix (Our "Wow" Factor):</strong> Legacy OCR engines visually confuse the continuous top-line (Matra) of Bengali with Hindi (Devanagari). To fix this, we inject the raw OCR into GPT-4o with a highly tuned system prompt. GPT-4o recognizes the phonetic layout of regional names, standardizes the English extraction, and literally rewrites the entire text back into <strong>Perfect Native Regional Script</strong> (Bengali, Marathi, etc.) to display on the Magistrate's verification desk.</li>
+                <li><strong>Sovereign Execution:</strong> The AI Gateway defaults to a locally hosted Vision-Language Model (<strong>Qwen2-VL-7B</strong> in 8-bit quantization). It processes native Bengali/Hindi Ligatures seamlessly entirely within the VM. Azure OpenAI acts strictly as a load-balancing failover.</li>
+                <li><strong>Hybrid HITL Learning:</strong> Both models share the same PostgreSQL <code>AIFeedback</code> table. When a Magistrate corrects an OCR error in the split-screen UI:
+                    <ul>
+                        <li><em>Immediate (RAG):</em> The correction embeds into <code>pgvector</code>. The next inference dynamically injects this past mistake as "Few-Shot Context," fixing the AI instantly.</li>
+                        <li><em>Intrinsic (LoRA):</em> Every 1,000 rows, a Celery cron job trains a Low-Rank Adaptation (LoRA) on the local model, fundamentally and permanently teaching it the new dialect without catastrophic forgetting.</li>
+                    </ul>
+                </li>
             </ol>
         </section>
 
-        <!-- Security -->
-        <section id="security">
-            <h2>🔒 4. Cryptographic Security & Anti-Fraud</h2>
-            <p>Land fraud often happens when duplicate or forged deeds are uploaded. N.A.K.S.H.A. solves this fundamentally:</p>
+        <!-- Zero Trust Auth -->
+        <section id="auth">
+            <h2 class="epic-title">🔒 3. Zero-Trust RBAC & DigiLocker Integration</h2>
+            <p>Security and segregation of duties are paramount. We use a Unified Login Interface governed by 3 strict Role-Based Access Control (RBAC) tiers.</p>
+            
+            <div class="mermaid">
+            sequenceDiagram
+                participant Citizen
+                participant NAKSHA (Node 1)
+                participant Abstract DB
+                participant DigiLocker API Setu
+                
+                Citizen->>NAKSHA (Node 1): Login via Citizen Portal
+                NAKSHA (Node 1)->>DigiLocker API Setu: OAuth 2.0 Auth Request
+                DigiLocker API Setu-->>NAKSHA (Node 1): Validated Access Token
+                Note over NAKSHA (Node 1),Abstract DB: Saves Session to Leak-Proof Segregated DB
+                
+                Note over NAKSHA (Node 1): Fast forward: Magistrate Approves a Deed
+                NAKSHA (Node 1)->>DigiLocker API Setu: "Push URI" metadata (Issuer API)
+                Citizen->>DigiLocker API Setu: Views Issued Document in App
+                DigiLocker API Setu->>NAKSHA (Node 1): Secure /pull Request
+                NAKSHA (Node 1)-->>Citizen: Delivers PDF on-demand
+            </div>
+
             <ul>
-                <li><strong>SHA-256 Hashing:</strong> When a Magistrate clicks "Approve", the system mathematically mints a unique cryptographic hash combining the Registration Number, Acres, and Raw Text.</li>
-                <li><strong>Database Deduplication:</strong> Our PostgreSQL schema enforces a <code>UNIQUE(document_hash)</code> constraint. If a malicious actor tries to upload a slightly altered copy of an existing document, the Celery worker immediately catches the <code>IntegrityError</code> and flags it as a <strong>Duplicate/Potential Forgery</strong>, blocking it from entering the database.</li>
-                <li><strong>Human-in-the-Loop (RLHF):</strong> If the AI is unsure (Confidence < 90%), it refuses to approve the document automatically. It flags it as <code>PENDING_HUMAN_REVIEW</code>. The Magistrate must manually correct the errors, and the system logs their corrections into an <code>AIFeedback</code> table to train future models.</li>
+                <li><strong>Public (Citizens):</strong> Authenticate via DigiLocker. <strong>Crucially:</strong> Public profiles are stored in a segregated, abstracted database. A breach of the public portal cannot reach the core Magistrate land registry. Delivery of property cards utilizes the official India Stack <em>Push URI Architecture</em>.</li>
+                <li><strong>Magistrates:</strong> Authenticate via phishing-resistant FIDO2 Hardware Passkeys or strict Govt SSO. No standard passwords allowed.</li>
+                <li><strong>Admins (Devs):</strong> Highest-level permissions routed specifically through Node 5.</li>
             </ul>
         </section>
 
-        <!-- Delivery -->
-        <section id="delivery">
-            <h2>📄 5. Citizen Delivery & Notification Engine</h2>
-            <p>Digitization is useless if the citizen cannot access it. We built a comprehensive output pipeline:</p>
+        <!-- PostGIS Engine -->
+        <section id="geospatial">
+            <h2 class="epic-title">🗺️ 4. Autonomous Geospatial Dispute Engine</h2>
+            <p>Disputes in rural land often stem from overlapping physical boundaries. We shift this computational burden entirely to the database layer for zero-latency execution.</p>
+            
+            <div class="mermaid">
+            graph TD
+                A[Magistrate draws Polygon on React Leaflet] --> B(API calls /save)
+                B --> C{PostgreSQL BEFORE INSERT Trigger}
+                C -->|GiST Bounding Box &&| D{ST_Intersects Math}
+                D -->|No Overlap| E[Commit to Ledger]
+                D -->|Overlap Detected| F[RAISE EXCEPTION]
+                F --> G[Frontend throws DISJOINT ALERT]
+            </div>
+
+            <div class="tip-box">
+                <strong>The Optimization: GiST + ST_Intersects</strong><br>
+                Instead of heavy Python geometry processing, a Postgres trigger intercepts the save. It uses the <code>&&</code> bounding-box operator against a GiST spatial index. This instantly filters millions of lands to just candidate polygons. Then it runs the exact <code>ST_Intersects()</code> math. If true, it automatically halts the transaction and alerts the Magistrate of a contested boundary.
+            </div>
+        </section>
+
+        <!-- Infrastructure -->
+        <section id="infrastructure">
+            <h2 class="epic-title">⚙️ 5. Scaling Celery & Pub/Sub Connectivity</h2>
+            <p>Scaling horizontally introduces massive concurrency risks (race conditions) and client timeout vulnerabilities.</p>
+            
             <ul>
-                <li><strong>Live Gmail Dispatch:</strong> The moment a Magistrate hits "Approve", a FastAPI Background Task connects to Google's SMTP server and fires an official Government email directly to the citizen's phone containing their verification status and Cryptographic Hash.</li>
-                <li><strong>Next.js Public Portal:</strong> Citizens can scan their QR code to instantly verify their digital property card on a modern web view.</li>
-                <li><strong>Offline ReportLab PDFs:</strong> For older citizens or official paper trails, our Python backend dynamically generates a beautifully formatted, double-bordered Legacy Deed PDF featuring official "GOVERNMENT OF INDIA" headers and a dynamically embedded QR code via the <code>qrcode</code> library.</li>
+                <li><strong>Distributed Redlocks:</strong> When scaling Node 4, multiple Celery workers fight for the same Redis task. We implement Redis <code>SETNX</code> distributed locks (Redlock algorithm). If Worker A pulls a document, Worker B is mathematically blocked from touching it. Furthermore, we enforce a strict single-instance constraint on <code>celery-beat</code> to prevent duplicated cron jobs.</li>
+                <li><strong>Fixing HTTP Timeouts (Pub/Sub + SSE):</strong> Standard load balancers (Nginx) drop connections after 60 seconds, destroying long AI task requests. We replace static HTTP with <strong>Server-Sent Events (SSE)</strong>. FastAPI maintains a 15-second heartbeat ping. When Celery finishes, it publishes a payload to a Redis Pub/Sub channel. FastAPI hears it and instantly streams the JSON directly into the Next.js client. No timeouts, no frozen screens.</li>
             </ul>
         </section>
         
-        <!-- Telemetry -->
-        <section id="telemetry">
-            <h2>📊 6. Ministry Telemetry (Grafana)</h2>
-            <p>We implemented a massive macro-level dashboard specifically for National Directors and Cabinet Ministers. Powered by Grafana and deeply integrated into our PostGIS database, this dashboard runs on port 3001 but is seamlessly embedded into the Next.js frontend via a secure, anonymous iFrame.</p>
-            <p>It instantly tracks <strong>Total Wealth Unlocked</strong> (inflating 100-year-old property prices to modern valuations via GPT-4 algorithms), <strong>Digitization by State</strong>, and the <strong>Human Workload Queue</strong>.</p>
-        </section>
-
-        <!-- Copilot -->
-        <section id="copilot">
-            <h2>🤖 7. Secure RAG Copilot</h2>
-            <p>Our Chatbot is not a standard ChatGPT window. It is a highly constrained Retrieval-Augmented Generation (RAG) agent.</p>
+        <!-- Cryptographic Vault -->
+        <section id="crypto">
+            <h2 class="epic-title">🛡️ 6. The Cryptographic Vault (SHA-256 Deduplication)</h2>
+            <p>A digitized record is useless if it can be easily forged. N.A.K.S.H.A. provides absolute mathematical certainty.</p>
+            <div class="code-block">
+hash = SHA-256( registration_number + primary_owners + total_area + geometry )
+            </div>
             <ul>
-                <li>It secretly queries the live PostgreSQL database for the latest records and bundles them into JSON.</li>
-                <li>It is explicitly prompted <strong>NEVER to hallucinate</strong> outside of the provided JSON context.</li>
-                <li>It acts as an interactive site-guide, routing users to the Bulk Digitizer or Public Validator securely.</li>
+                <li><strong>Database Strict Deduplication:</strong> Our PostgreSQL schema enforces a <code>UNIQUE(crypto_hash)</code> constraint. If a malicious actor uploads a slightly altered copy of a deed, the database throws an <code>IntegrityError</code>. The Celery worker gracefully rolls back the transaction and permanently flags the upload as a potential forgery.</li>
+                <li><strong>Offline Validation:</strong> The system automatically stamps a dynamically generated QR code onto an official ReportLab PDF. Citizens without internet can present physical papers, and any buyer or bank can scan the QR code to instantly verify the deed's mathematical authenticity against our secure portal.</li>
+            </ul>
+            
+        <!-- Tech Stack -->
+        <section id="stack">
+            <h2 class="epic-title">🛠️ 7. Tech Stack & Concepts Dictionary</h2>
+            <div class="code-block">
+                <strong>Frontend:</strong> Next.js 14 (SSR), TailwindCSS, React-Leaflet.<br>
+                <strong>Backend:</strong> FastAPI (Async), SQLAlchemy (ORM), Celery (Workers).<br>
+                <strong>Database:</strong> PostgreSQL, PostGIS (Geospatial), pgvector (Vector Embeddings).<br>
+                <strong>Infrastructure:</strong> Redis (Broker/PubSub/Locks), Docker (Containerization), Grafana (Telemetry).<br>
+                <strong>AI & Security:</strong> Qwen2-VL-7B (Local VLM), Azure OpenAI (Failover), DigiLocker API Setu (OAuth), SHA-256 (Hashing).
+            </div>
+            <ul>
+                <li><strong>SSR (Server-Side Rendering):</strong> Generating HTML on the server for speed, security, and Edge caching (used in Next.js).</li>
+                <li><strong>RAG (Retrieval-Augmented Generation):</strong> Injecting specific JSON context from our DB into the AI prompt before it answers to prevent hallucination.</li>
+                <li><strong>LoRA (Low-Rank Adaptation):</strong> A highly efficient method to fine-tune our local AI model without needing massive supercomputers.</li>
+                <li><strong>SSE (Server-Sent Events):</strong> Keeping a lightweight, one-way connection open so the backend can push live updates to the frontend without standard HTTP 60-second timeouts.</li>
+                <li><strong>GiST Indexing:</strong> An advanced, rapid search tree used by PostGIS to instantly filter geospatial bounding boxes.</li>
             </ul>
         </section>
 
-        <!-- Hurdles -->
-        <section id="hurdles">
-            <h2>🚧 8. Build Hurdles & Technical Fixes</h2>
-            <p>Building an Enterprise architecture in a Hackathon environment introduced several critical hurdles that we systematically solved:</p>
+        <!-- Q&A Section -->
+        <section id="qna">
+            <h2 class="epic-title">❓ 8. Team Q&A (Internal PPT Reference)</h2>
+            <p>Use these answers to defend the architecture while drafting the presentation or answering judge questions.</p>
             <ul>
-                <li><strong>Azure API Restrictions:</strong> The Azure Document Intelligence tier restricted explicit locale hints (like <code>bn-IN</code>), forcing the model to aggressively hallucinate Bengali text as Hindi. <strong>Fix:</strong> We engineered a multi-modal fallback where GPT-4o acts as a phonetic post-processor, recognizing the hallucinations and mathematically rewriting the text back to pure Bengali.</li>
-                <li><strong>Docker Storage Exhaustion:</strong> Heavy Next.js build caching quickly exhausted the Azure VM's disk space, causing catastrophic <code>no space left on device</code> errors. <strong>Fix:</strong> Implemented strict <code>docker builder prune</code> protocols to wipe dangling SWC layers while surgically preserving the Grafana volumes so we wouldn't lose telemetry data.</li>
-                <li><strong>Postgres Schema Drifting:</strong> Adding the new <code>owner_email</code> field for notifications caused immediate 500 Internal Server API crashes because SQLAlchemy does not auto-alter existing tables. <strong>Fix:</strong> Bypassed ORM constraints and executed raw PostgreSQL <code>ALTER TABLE</code> queries directly inside the database container.</li>
-                <li><strong>Grafana iFrame Clickjacking Protection:</strong> Grafana's strict security protocols blocked Next.js from embedding the charts natively. <strong>Fix:</strong> Overrode Grafana's initialization variables (<code>GF_SECURITY_ALLOW_EMBEDDING=true</code>) and mapped an Anonymous Viewer role to allow seamless UI integration without compromising the admin login on port 3001.</li>
-                <li><strong>Cryptographic DB Deadlocks:</strong> Uploading the same PDF twice caused a cryptographic <code>IntegrityError</code> which crashed the entire Celery Worker node. <strong>Fix:</strong> Wrapped the worker transaction in a graceful <code>db.rollback()</code> block, allowing the system to instantly flag it as a forgery without dropping the queue.</li>
+                <li><strong>Q: Why are we deploying a Local AI Model (Qwen2-VL) instead of just using Azure?</strong><br><em>A: Data Sovereignty and Resilience. Government data is highly sensitive. Processing it entirely locally ensures 100% privacy and eliminates API costs. Azure is kept strictly as a failover load-balancer in case the local node crashes.</em></li>
+                <li><strong>Q: How do we prevent Celery workers from processing the same deed twice?</strong><br><em>A: We use Redis 'Redlocks' (SETNX). When a worker node picks up a document, it mathematically locks it. No other container in the horizontal fleet can touch it.</em></li>
+                <li><strong>Q: How does the AI actually "learn" from Magistrate corrections?</strong><br><em>A: We use a Hybrid loop. Corrections go into our <code>AIFeedback</code> table. Instantly, <code>pgvector</code> uses it for Few-Shot RAG (fixing the AI immediately for that specific document type). Every 1,000 rows, we run a scheduled LoRA fine-tuning script to permanently teach the base model without catastrophic forgetting.</em></li>
+                <li><strong>Q: How does DigiLocker integration work? Do we upload PDFs to their servers?</strong><br><em>A: No. We use India Stack's "Push URI" architecture. We store the PDF securely on our own nodes. We send DigiLocker the metadata, and they securely hit our exposed FastAPI <code>/pull</code> endpoint when the citizen wants to view it.</em></li>
+                <li><strong>Q: How does the system instantly know if drawn lands overlap?</strong><br><em>A: We don't do the math in Python. A PostgreSQL Database Trigger fires before saving, using a GiST Bounding-Box index (<code>&&</code>) combined with <code>ST_Intersects</code>. It intercepts the save in milliseconds.</em></li>
             </ul>
         </section>
 
-        <!-- Presenter Guide -->
-        <section id="directions">
-            <h2>🎤 9. Hackathon Presenter Guide</h2>
-            <p>When the judges walk up to your table, follow this exact flow to guarantee maximum impact:</p>
-            
-            <div class="tip-box">
-                <strong>Step 1: The OCR Hallucination (Bulk Digitizer)</strong><br>
-                Upload `3.pdf` (The Bengali document). Let it process. Show the judges the Verification Desk. Point out the left panel (Azure's raw Hindi OCR) vs the right panel (GPT-4's perfect English translation). Say: <em>"Standard OCR corrupts national databases by confusing Bengali and Hindi. Our AI caught the error, extracted the exact value, and reconstructed the native script."</em>
-            </div>
-            
-            <div class="tip-box">
-                <strong>Step 2: The Cadastral Map & Email Dispatch</strong><br>
-                While on the Verification Desk, scroll down to the Leaflet map and draw a polygon. Type your own personal email address into the new "Citizen Contact Email" box. Click the green "Approve & Mint Hash" button. Show the judges your phone as the real-time Government Email arrives with the Cryptographic hash.
-            </div>
-
-            <div class="tip-box">
-                <strong>Step 3: The Cryptographic PDF (Public Validator)</strong><br>
-                Copy the hash from the email (or dashboard). Go to the Public Validator. Paste the hash to prove it is authentic. Click "Download Legacy PDF" and show them the dynamically generated ReportLab PDF with the QR code.
-            </div>
-            
-            <div class="tip-box">
-                <strong>Step 4: Ministry Analytics & Copilot</strong><br>
-                Click on the "Ministry Analytics" button on the main dashboard to reveal the live Grafana charts. Say: <em>"This gives the Ministry real-time macro-level visibility into total wealth digitized."</em> Finally, open the Copilot and ask it: <strong>"Who owns the largest plot of land?"</strong> to prove it reads the live database securely without hallucinating.
-            </div>
-
-            <p style="text-align: center; margin-top: 40px; font-weight: bold; color: var(--primary);">Go out there and win. 🏆</p>
-        </section>
-        
+        <p style="text-align: center; margin-top: 80px; font-weight: 800; color: #0f766e; font-size: 1.4rem;">N.A.K.S.H.A. is built for scale. It is built to win.</p>
     </div>
 </body>
 </html>
