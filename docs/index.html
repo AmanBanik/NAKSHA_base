@@ -57,7 +57,7 @@
                     N2[Node 2: PostgreSQL + Grafana]
                     N3[Node 3: AI VLM Gateway]
                     N4[Node 4: Celery + Redis Broker]
-                    N5[Node 5: Central Dev Command]
+                    N5[Node 5: Central Dev Command <br><i>(Self-Contained UI + DB)</i>]
                 end
 
                 Client((Citizens / Officers)) -->|WebSockets/SSE| N1
@@ -76,7 +76,7 @@
                 <li><strong>Node 2 (State):</strong> PostgreSQL with PostGIS extensions and pgvector. Grafana runs independently on port 3001, providing live National Telemetry via secured anonymous iFrames.</li>
                 <li><strong>Node 3 (AI Gateway):</strong> The dedicated intelligence routing engine. Heavy GPU workloads live strictly here.</li>
                 <li><strong>Node 4 (Queue):</strong> Distributed Celery workers governed by a Redis broker, enabling asynchronous background execution for thousands of concurrent uploads.</li>
-                <li><strong>Node 5 (Command):</strong> A strictly isolated Dev/Admin environment showing live observability (online devs, container health, queue bottlenecks).</li>
+                <li><strong>Node 5 (Central Command):</strong> A 100% self-contained <strong>Isolated Control Plane</strong> (Out-of-Band Management). It hosts its own dedicated UI, its own isolated database (for dev credentials and metrics), and internal diagnostic tools. If the main public database or platform crashes, Node 5 remains perfectly online, granting Developers an air-gapped, secure backdoor to debug and reboot the system.</li>
             </ul>
         </section>
 

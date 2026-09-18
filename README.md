@@ -30,7 +30,7 @@ graph TD
     N2[Node 2: PostGIS + pgvector + Grafana]
     N3[Node 3: AI Gateway Qwen2-VL / Azure]
     N4[Node 4: Celery + Redis Redlocks]
-    N5[Node 5: Central Dev Command]
+    N5[Node 5: Central Dev Command UI+DB]
 
     Client((Citizens / Officers)) -->|SSE PubSub| N1
     N1 -->|Async Upload| N4
