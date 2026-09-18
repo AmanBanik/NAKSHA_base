@@ -53,22 +53,22 @@
             <div class="mermaid">
             graph TD
                 subgraph The Fleet
-                    N1[Node 1: Next.js Platform]
-                    N2[Node 2: PostgreSQL + Grafana]
-                    N3[Node 3: AI VLM Gateway]
-                    N4[Node 4: Celery + Redis Broker]
-                    N5[Node 5: Central Dev Command <br><i>(Self-Contained UI + DB)</i>]
+                    N1["Node 1: Next.js Platform"]
+                    N2["Node 2: PostgreSQL + Grafana"]
+                    N3["Node 3: AI VLM Gateway"]
+                    N4["Node 4: Celery + Redis Broker"]
+                    N5["Node 5: Central Dev Command (Self-Contained UI + DB)"]
                 end
 
-                Client((Citizens / Officers)) -->|WebSockets/SSE| N1
-                N1 -->|Async Tasks| N4
-                N4 <-->|Inference Payload| N3
-                N3 <-->|Read/Write Vectors| N2
-                N1 <-->|Query| N2
+                Client(("Citizens / Officers")) -->|"WebSockets/SSE"| N1
+                N1 -->|"Async Tasks"| N4
+                N4 <-->|"Inference Payload"| N3
+                N3 <-->|"Read/Write Vectors"| N2
+                N1 <-->|"Query"| N2
                 
-                N5 -.->|Live Telemetry| N1
-                N5 -.->|Queue Metrics| N4
-                N5 -.->|DB Health| N2
+                N5 -.->|"Live Telemetry"| N1
+                N5 -.->|"Queue Metrics"| N4
+                N5 -.->|"DB Health"| N2
             </div>
 
             <ul>
@@ -87,16 +87,16 @@
             
             <div class="mermaid">
             graph LR
-                Doc[Legacy Deed] --> Router{AI Router Node}
-                Router -->|Primary (Vision)| VLM[Local Qwen2-VL]
-                VLM -->|Transliteration| Bhashini[GoI Bhashini API]
-                Router -->|Failover (Vision+Text)| Azure[Azure GPT-4o]
+                Doc["Legacy Deed"] --> Router{"AI Router Node"}
+                Router -->|"Primary (Vision)"| VLM["Local Qwen2-VL"]
+                VLM -->|"Transliteration"| Bhashini["GoI Bhashini API"]
+                Router -->|"Failover (Vision+Text)"| Azure["Azure GPT-4o"]
                 
-                Bhashini --> PG[(PostgreSQL AIFeedback)]
+                Bhashini --> PG[("PostgreSQL AIFeedback")]
                 Azure --> PG
                 
-                PG -.->|Universal RAG Memory| Router
-                PG -->|Batch 1,000 Rows| LoRA[Scheduled LoRA Tuning]
+                PG -.->|"Universal RAG Memory"| Router
+                PG -->|"Batch 1,000 Rows"| LoRA["Scheduled LoRA Tuning"]
                 LoRA --> VLM
             </div>
 
